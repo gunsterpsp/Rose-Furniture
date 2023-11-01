@@ -1,4 +1,10 @@
-<?php include '../includes/header_ecommerce.php'; ?>
+<?php include '../includes/header_ecommerce.php'; 
+if(!isset($_SESSION['user_id'])){
+  header("../main/home");
+}
+
+
+?>
 
 
             <!-- Recent Sales -->

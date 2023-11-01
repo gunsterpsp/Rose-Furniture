@@ -74,12 +74,12 @@
 		<button class ="btn-log" type="submit" name="login_Submit" disabled="disabled" id="loginButton" >Login</button>
 
 		<div class="forgot_password">
-		<a href="../forms/forgot_password.php">Forgot password?</a>
+		<a href="forgot_password">Forgot password?</a>
 		</div>
 
 		<div class="signup_link">
 		Not a member?
-		<a href="../forms/signup.php">Signup here</a>
+		<a href="signup.php">Signup here</a>
 		</div>
      </form>
 	<script type="text/javascript">

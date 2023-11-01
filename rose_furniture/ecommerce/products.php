@@ -1,4 +1,10 @@
-<?php include '../includes/header_ecommerce.php'; ?>
+<?php include '../includes/header_ecommerce.php'; 
+if(!isset($_SESSION['user_id'])){
+  header('Location: ../main/home');
+  exit;
+}
+
+?>
 
 
             <!-- Recent Sales -->
@@ -58,8 +64,12 @@
           <input type="text" class="form-control" name="product_quantity" id="product_quantity">
         </div>
         <div class="mb-2">
+          <label for="">Description</label>
+          <textarea name="product_description" id="product_description" class="form-control" rows="3"></textarea>
+        </div>
+        <div class="mb-2">
           <label for="">Product Category</label>
-          <select class="form-select" name="product_category" id="product_category">
+          <select class="form-select select2" name="product_category" id="product_category" style="width: 100%;">
           <option value="0">Select a Category</option>
           <?php
             include '../database/connection.php';
@@ -96,23 +106,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-      <input type="hidden" class="form-control" id="edit_id">
-        <div class="mb-2">
-          <label for="">Product Name</label>
-          <input type="text" class="form-control" id="edit_product_name">
-        </div>
-        <div class="mb-2">
-          <label for="">Product Price</label>
-          <input type="text" class="form-control" id="edit_product_price">
-        </div>
-        <div class="mb-2">
-          <label for="">Product Quantity</label>
-          <input type="text" class="form-control" id="edit_product_quantity">
-        </div>
-        <div class="mb-2">
-          <label for="">Product Image</label>
-          <input type="file" class="form-control" id="edit_product_image">
-        </div>
+          <div id="display_category"></div>
       </div>
       <div class="modal-footer">
         <button type="submit" class="btn btn-primary updateUser">Submit</button>
@@ -153,8 +147,10 @@ $('#example').dataTable({
             if($("#product_name").val() == "") return Swal.fire('Product Name','cannot be empty!','info');
             if($("#product_price").val() == "") return Swal.fire('Product Price','cannot be empty!','info');
             if($("#product_quantity").val() == "") return Swal.fire('Product Quantity','cannot be empty!','info');
+            if($("#product_description").val() == "") return Swal.fire('Description','cannot be empty!','info');
             if($("#product_category").val() == 0) return Swal.fire('Product Category','cannot be empty!','info');
             if($("#product_image").val() == "") return Swal.fire('Product Image','cannot be empty!','info');
+
 
             var formData = new FormData(this);
 
@@ -170,6 +166,7 @@ $('#example').dataTable({
                   $("#product_name").val("");
                   $("#product_price").val("");
                   $("#product_quantity").val("");
+                  $("#product_description").val("");
                   $("#product_category").val(0);
                   $("#product_image").val("");
                 
@@ -191,12 +188,17 @@ $('#example').dataTable({
             url: "../server/function_product.php",
             type: "POST",
             data: data, 
-            dataType: "json",
+            // dataType: "json",
             success: function(response){
-              $("#edit_product_name").val(response.product_name);
-              $("#edit_product_price").val(response.product_price);
-              $("#edit_product_quantity").val(response.product_quantity);
-              $("#edit_product_image").val(response.product_image);
+              $("#display_category").html(response);
+
+              // console.log(response)
+              // $("#edit_product_name").val(response.product_name);
+              // $("#edit_product_price").val(response.product_price);
+              // $("#edit_product_quantity").val(response.product_quantity);
+              // $("#edit_product_description").val(response.product_description);
+              // $("#edit_product_category").val(response.product_category);
+              // $("#edit_product_image").val(response.product_image);
             }
         });
       })
@@ -278,4 +280,40 @@ $('#example').dataTable({
       })
 
 
+      const priceInput = document.getElementById("product_price");
+
+      // Add an input event listener to validate the input
+      priceInput.addEventListener("input", function() {
+          const valuePrice = this.value;
+          const priceValue = parseFloat(valuePrice);
+
+          if (isNaN(priceValue)) {
+              // Clear the input field if the input is not a valid number
+              this.value = "";
+              alert("Please enter a valid price number!");
+          }
+      });
+
+      const quantityInput = document.getElementById("product_quantity");
+
+      // Add an input event listener to validate the input
+      quantityInput.addEventListener("input", function() {
+          const valueQuantity = this.value;
+          const quantityValue = parseFloat(valueQuantity);
+
+          if (isNaN(quantityValue)) {
+              // Clear the input field if the input is not a valid number
+              this.value = "";
+              alert("Please enter a valid quantity number!");
+          }
+      });
+
+      $(document).ready(function() {
+          $('.select2').select2({
+            dropdownParent: $("#staticBackdrop")
+          });
+          $('.select3').select2({
+            dropdownParent: $("#EditBackdrop")
+          });
+      });
    </script>

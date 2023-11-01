@@ -7,6 +7,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $product_price = $_POST['product_price'];
     $product_quantity = $_POST['product_quantity'];
     $product_category = $_POST['product_category'];
+    $product_description = $_POST['product_description'];
 
     function generateRandomString($length = 10) {
         $length = max(1, (int)$length);
@@ -31,8 +32,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         $target_file = $upload_dir . $newName;
         move_uploaded_file($file_tmp, $target_file);
-        $sql = "INSERT INTO tbl_products (product_code, product_name, product_price, product_quantity, product_image, product_category) 
-        VALUES ('$randomString', '$product_name', '$product_price', '$product_quantity', '$newName', '$product_category')";
+        $sql = "INSERT INTO tbl_products (product_code, product_name, product_price, product_quantity, product_description, product_image, product_category) 
+        VALUES ('$randomString', '$product_name', '$product_price', '$product_quantity', '$product_description', '$newName', '$product_category')";
         mysqli_query($conn, $sql);
     }
 }

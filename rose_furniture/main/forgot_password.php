@@ -1,85 +1,95 @@
 <?php
-session_start(); 
-include "../server/forgot_password.php";
+#include "../server/autodeleteuseraccount.php";
 ?>
 
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Rose Furniture</title>
-	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-	<script src="../../style/javascript/DisplayProfileImage.js"></script>
+  <title>Rose Furniture</title>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script> 
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-	<link rel="stylesheet" type="text/css" href="../style/css/forgot_password.css">
+	<link rel="stylesheet" type="text/css" href="../assets/css/login.css">
 </head>
 <body>
-
-
-	<!---MAIN CONTAINER START-->
-		<div class="main-container">
-			<div class="card">
-				<form method="POST">
-					<!--EDIT CONTACT NUMBER SECTION START-->
-					<section class="request_password">
-						<p>Recover Password</p>
-						<div class="form_request_password">
-							<p>Please enter your email that already registered in your profile so that we can recover your password.</p>
-							<input type="text" name="email" value="" placeholder="Enter your email" autocomplete="off" required="">
-						</div>
-
-						<!--SUBMIT SECTION START-->
-            <div class="buttons">
-  						<button type="submit" name="submit">Submit</button>
-              <button type="submit" name="cancel">Cancel</button>
-            </div>
-						<!--SUBMIT SECTION END-->
-					</section>
-					<!--EDIT CONTACT NUMBER SECTION END-->
-				</form>
-			</div>
-		</div>
-	<!---MAIN CONTAINER END-->
+<div class="log">
 <?php
-   $notification = (isset($_GET['notification']) ? $_GET['notification'] : '');
+    include '../database/connection.php';
+    error_reporting(0);
 
-  #Add User Account
-    #Success
-    if($notification=='ErrorEmail'){
-    echo '<script type="text/javascript">
-    Swal.fire({
-      position: "center",
-      icon: "warning",
-      text: "This email does not exist. Please try it again.",
-      showConfirmButton: false,
-      timer: 1500
-    })
-      </script>';
-    }
+        global $conn;
+        if (isset($_POST['login_Submit'])){
+            if(isset($_POST['login_userCode']) && isset($_POST['login_userPass'])){
+              if(!empty($_POST['login_userCode']) && !empty($_POST['login_userPass'])){
+                      $login_userCode =  mysqli_real_escape_string($conn, $_POST['login_userCode']);
+                      $login_userPass =  mysqli_real_escape_string($conn, $_POST['login_userPass']);
+                        $dispRM_users = $conn->query("SELECT * FROM `tbl_users`
+                         where `username` = '$login_userCode' and `password` = '$login_userPass'");			
+                           $auth_user = $dispRM_users->fetch_assoc();
+                         if (($_POST['login_userCode'] == $auth_user['username']) && $_POST['login_userPass'] == $auth_user['password']) {
+                              $_SESSION['user_id'] = $auth_user['user_id'];
+                              $_SESSION['username'] = $auth_user['username'];
+                              $_SESSION['group_code'] = $auth_user['group_code'];
+                         if (stripos($auth_user['status'], '0') !== FALSE ) {
+                      echo '<script type="text/javascript">
+                      Swal.fire({
+                        position: "center",
+                        icon: "warning",
+                        text: "Sorry, your account has been deactivate. Please contact the costumer service.",
+                        showConfirmButton: false,
+                        timer: 2500
+                      })
+                        </script>';
+                    }
+                    else if (stripos($auth_user["user_session"], "1") !== FALSE) {
+                      header("location: ../ecommerce/dashboard");   
+                    }
+                    else {
+                        header("location: ../ecommerce/home"); 
+                    }
+                  }else {
+                    echo '<script type="text/javascript">
+                    Swal.fire({
+                      position: "center",
+                      icon: "warning",
+                      text: "Username and Password is Incorrect. Please sign up or try it again.",
+                      showConfirmButton: false,
+                      timer: 2500
+                    })
+                      </script>';
+                  }
+              }
+            }    
+          }
+    ?>
+     <form action="login.php" class="log_form" id="loginForm" method="post">
+		<img src ="../assets/img/logo.png" class ="image">
+		<?php if (isset($_GET['error'])) { ?>
+     		<p class="error" style="margin-left: 30px"><?php echo $_GET['error']; ?></p>
+     	<?php } ?>
+		<div class="input">
+     	<input type="text" id="username" name="login_userCode" autocomplete="off" placeholder="Email"><br>
+		</div>
+		
+		<button class ="btn-log" type="submit" name="login_Submit" disabled="disabled" id="loginButton" >Reset</button>
 
-    elseif($notification=='SendEmail'){
-    echo '<script type="text/javascript">
-    Swal.fire({
-      position: "center",
-      icon: "success",
-      title: "Successfully Sent Email.",
-      text: "Please check your email for the link to recover your password. If you cant find the email, just check your spam.",
-      showConfirmButton: false,
-      timer: 5000
-    })
-      </script>';
-    }
+		<!-- <div class="forgot_password">
+		<a href="forgot_password">Forgot password?</a>
+		</div> -->
 
-    elseif($notification=='ErrorSendEmail'){
-    echo '<script type="text/javascript">
-    Swal.fire({
-      position: "center",
-      icon: "warning",
-      title: "Error Send Email.",
-      showConfirmButton: false,
-      timer: 1500
-    })
-      </script>';
-    }
-  ?>
+		<div class="signup_link">
+		Already have an account?
+		<a href="login">Login here</a>
+		</div>
+     </form>
+	<script type="text/javascript">
+		loginForm.addEventListener('input', () =>{
+			if (username.value.length > 0 && password.value.length > 0){
+				loginButton.removeAttribute('disabled');
+			}else{
+				loginButton.setAttribute('disabled', 'disabled');
+			}
+		});
+	</script>
+</div>
 </body>
 </html>

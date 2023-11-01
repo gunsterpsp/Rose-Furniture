@@ -1,11 +1,11 @@
 <?php
 @require_once '../database/connection.php';
 
-$curPageName = substr($_SERVER["SCRIPT_NAME"],strrpos($_SERVER["SCRIPT_NAME"],"/")+1);
+$curPageName = substr($_SERVER["SCRIPT_NAME"], strrpos($_SERVER["SCRIPT_NAME"], "/") + 1);
 
 $username1 = $_SESSION['username'];
 $getID     = $_SESSION['user_id'];
-$queryUser = $conn->query("SELECT * FROM `tbl_users` WHERE `user_id` = '".$getID."' ");
+$queryUser = $conn->query("SELECT * FROM `tbl_users` WHERE `user_id` = '" . $getID . "' ");
 $user      = $queryUser->fetch_assoc();
 ?>
 
@@ -31,17 +31,17 @@ $user      = $queryUser->fetch_assoc();
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <!-- Vendor CSS Files -->
 
-    <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
-    <link href="assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
-    <link href="assets/vendor/quill/quill.snow.css" rel="stylesheet">
-    <link href="assets/vendor/quill/quill.bubble.css" rel="stylesheet">
-    <link href="assets/vendor/remixicon/remixicon.css" rel="stylesheet">
-    <link href="assets/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/bsDatatable.css">
-    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.min.css" rel="stylesheet">
-    <!-- <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+  <link href="assets/vendor/quill/quill.snow.css" rel="stylesheet">
+  <link href="assets/vendor/quill/quill.bubble.css" rel="stylesheet">
+  <link href="assets/vendor/remixicon/remixicon.css" rel="stylesheet">
+  <link href="assets/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/bsDatatable.css">
+  <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.min.css" rel="stylesheet">
+  <!-- <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css"> -->
-
+  <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
   <!-- Template Main CSS File -->
   <link href="assets/css/style.css" rel="stylesheet">
 
@@ -60,19 +60,26 @@ $user      = $queryUser->fetch_assoc();
   <header id="header" class="header fixed-top d-flex align-items-center">
 
     <div class="d-flex align-items-center justify-content-between">
-      <a href="index.html" class="logo d-flex align-items-center">
+      <a href="home" class="logo d-flex align-items-center">
         <img src="assets/img/logo.png" alt="">
         <span class="d-none d-lg-block">Rose Furniture</span>
       </a>
       <i class="bi bi-list toggle-sidebar-btn"></i>
     </div><!-- End Logo -->
 
-    <div class="search-bar">
-      <form class="search-form d-flex align-items-center" method="POST" action="#">
-        <input type="text" name="query" placeholder="Search" title="Enter search keyword">
-        <button type="submit" title="Search"><i class="bi bi-search"></i></button>
-      </form>
-    </div><!-- End Search Bar -->
+    <?php
+      if($_SESSION['group_code'] == 2){
+
+        if ($curPageName == "home.php") {
+          echo '<div class="search-bar">
+          <div class="search-form d-flex align-items-center">
+            <input type="text" id="search" name="query" placeholder="Search" title="Enter search keyword">
+            <button type="button" id="submit" title="Search"><i class="bi bi-search"></i></button>
+          </div>
+        </div>';
+        }
+      }
+    ?>
 
     <nav class="header-nav ms-auto">
       <ul class="d-flex align-items-center">
@@ -84,24 +91,35 @@ $user      = $queryUser->fetch_assoc();
         </li><!-- End Search Icon-->
 
 
-        
+
         <li class="nav-item dropdown">
 
           <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
             <i class="bi bi-bell"></i>
-            <span class="badge bg-primary badge-number">4</span>
+            <span class="badge bg-primary badge-number">
+              <?php
+              $sqlCountAdmin = mysqli_query($conn, "SELECT COUNT(notification_id) as 'id' FROM tbl_notifications WHERE receiver_id = '" . $_SESSION['user_id'] . "' AND status = 1 ");
+              $rowCoundAdmin = mysqli_fetch_assoc($sqlCountAdmin);
+              echo $rowCoundAdmin['id'];
+              ?>
+            </span>
           </a><!-- End Notification Icon -->
 
           <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
             <li class="dropdown-header">
-              You have 4 new notifications
-              <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
+              You have <?php
+                        $sqlCountAdmin = mysqli_query($conn, "SELECT COUNT(notification_id) as 'id' FROM tbl_notifications WHERE receiver_id = '" . $_SESSION['user_id'] . "' AND status = 1");
+                        $rowCoundAdmin = mysqli_fetch_assoc($sqlCountAdmin);
+                        echo $rowCoundAdmin['id'];
+                        ?> new notifications
+              <a href="notifications" class="notifViewAll"><span style="cursor: pointer;" class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
+              <span style="cursor: pointer;" class="badge rounded-pill bg-primary p-2 ms-2 markRead">Mark all as read</span>
             </li>
-            <li>
+            <!-- <li>
               <hr class="dropdown-divider">
-            </li>
+            </li> -->
 
-            <li class="notification-item">
+            <!-- <li class="notification-item">
               <i class="bi bi-exclamation-circle text-warning"></i>
               <div>
                 <h4>Lorem Ipsum</h4>
@@ -121,9 +139,9 @@ $user      = $queryUser->fetch_assoc();
                 <p>Quae dolorem earum veritatis oditseno</p>
                 <p>1 hr. ago</p>
               </div>
-            </li>
+            </li> -->
 
-            <li>
+            <!-- <li>
               <hr class="dropdown-divider">
             </li>
 
@@ -134,27 +152,128 @@ $user      = $queryUser->fetch_assoc();
                 <p>Quae dolorem earum veritatis oditseno</p>
                 <p>2 hrs. ago</p>
               </div>
-            </li>
+            </li> -->
 
-            <li>
-              <hr class="dropdown-divider">
-            </li>
 
-            <li class="notification-item">
-              <i class="bi bi-info-circle text-primary"></i>
-              <div>
-                <h4>Dicta reprehenderit</h4>
-                <p>Quae dolorem earum veritatis oditseno</p>
-                <p>4 hrs. ago</p>
-              </div>
-            </li>
 
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-            <li class="dropdown-footer">
+
+            <?php
+            $admin_id = $_SESSION['user_id'];
+            $sqlAllNotifs = mysqli_query($conn, "SELECT * FROM tbl_notifications WHERE receiver_id = $admin_id ORDER BY notification_id DESC LIMIT 5");
+            while ($rowNotifsAdmin = mysqli_fetch_assoc($sqlAllNotifs)) {
+              $sqlViewOrder = mysqli_query($conn, "SELECT order_id, cart_id, detail_code FROM tbl_order_detail_items WHERE detail_code = '" . $rowNotifsAdmin['detail_code'] . "' ");
+              $fetchOrder = mysqli_fetch_assoc($sqlViewOrder);
+
+            ?>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+              <?php
+              if ($_SESSION['group_code'] == 2) {
+
+                if($rowNotifsAdmin['status'] == 1){
+                  ?>
+                                  <a id="updateStatus" data-id="<?= $fetchOrder['detail_code'] ?>" href="view_order?code=<?= $fetchOrder['order_id']; ?>&item=<?= $fetchOrder['cart_id']; ?>&track_no=<?= $fetchOrder['detail_code'] ?>">
+                  <li class="notification-item">
+                    <i class="bi bi-info-circle text-primary"></i>
+                    <b>
+                    <div>
+                      <p class="text-justify"><?= $rowNotifsAdmin['notification_text'] ?></p>
+                      <p><?php echo date('m-d-Y h:i A', strtotime($rowNotifsAdmin['date'])); ?></p>
+                    </div>
+                    </b>
+                  </li>
+                </a>
+                  <?php
+                }else {
+                  ?>
+                    <a id="updateStatus" data-id="<?= $fetchOrder['detail_code'] ?>" href="view_order?code=<?= $fetchOrder['order_id']; ?>&item=<?= $fetchOrder['cart_id']; ?>&track_no=<?= $fetchOrder['detail_code'] ?>">
+                  <li class="notification-item">
+                    <i class="bi bi-info-circle text-primary"></i>
+                    <div>
+                      <p class="text-justify"><?= $rowNotifsAdmin['notification_text'] ?></p>
+                      <p><?php echo date('m-d-Y h:i A', strtotime($rowNotifsAdmin['date'])); ?></p>
+                    </div>
+                  </li>
+                </a>
+                  <?php
+                }
+              ?>
+              <?php
+              }else if($_SESSION['group_code'] == 1){
+                ?>
+                <?php
+                  if($rowNotifsAdmin['status'] == 1){
+                    ?>
+                                    <a href="approval" id="updateStatus" data-id="<?= $fetchOrder['detail_code'] ?>">
+                  <li class="notification-item">
+                    <i class="bi bi-info-circle text-primary"></i>
+                    <div>
+                      <b>
+                      <p class="text-justify"><?= $rowNotifsAdmin['notification_text'] ?></p>
+                      <p><?php echo date('m-d-Y h:i A', strtotime($rowNotifsAdmin['date'])); ?></p>
+                      </b>
+                    </div>
+                  </li>
+                </a>
+                    <?php
+                  }else {
+                    ?>
+                  <li class="notification-item">
+                    <i class="bi bi-info-circle text-primary"></i>
+                    <div>
+                      <p class="text-justify"><?= $rowNotifsAdmin['notification_text'] ?></p>
+                      <p><?php echo date('m-d-Y h:i A', strtotime($rowNotifsAdmin['date'])); ?></p>
+                    </div>
+                  </li>
+                    <?php
+                  }
+                ?>
+              <?php
+              }else if($_SESSION['group_code'] == 3){
+                if($rowNotifsAdmin['status'] == 1){
+                  ?>
+                  <a id="updateStatus" data-id="<?= $fetchOrder['detail_code'] ?>" href="receiving">
+                  <li class="notification-item">
+                    <i class="bi bi-info-circle text-primary"></i>
+                    <b>
+                    <div>
+                      <p class="text-justify"><?= $rowNotifsAdmin['notification_text'] ?></p>
+                      <p><?php echo date('m-d-Y h:i A', strtotime($rowNotifsAdmin['date'])); ?></p>
+                    </div>
+                    </b>
+                  </li>
+                </a>
+                  <?php
+                }else {
+                  ?>
+                    <a id="updateStatus" data-id="<?= $fetchOrder['detail_code'] ?>" href="receiving">
+                  <li class="notification-item">
+                    <i class="bi bi-info-circle text-primary"></i>
+                    <div>
+                      <p class="text-justify"><?= $rowNotifsAdmin['notification_text'] ?></p>
+                      <p><?php echo date('m-d-Y h:i A', strtotime($rowNotifsAdmin['date'])); ?></p>
+                    </div>
+                  </li>
+                </a>
+                  <?php
+                }
+              }
+              ?>
+
+              <!-- <li>
+                <hr class="dropdown-divider">
+              </li> -->
+            <?php
+            }
+            ?>
+
+
+
+
+            <!-- <li class="dropdown-footer">
               <a href="#">Show all notifications</a>
-            </li>
+            </li> -->
 
           </ul><!-- End Notification Dropdown Items -->
 
@@ -164,9 +283,9 @@ $user      = $queryUser->fetch_assoc();
 
           <a class="nav-link nav-icon" href="../ecommerce/my_cart">
             <i class='bx bx-cart-alt'></i>
-            <?php 
-                $cartSelect = $conn->query("SELECT COUNT(cart_id) AS 'count' FROM tbl_cart_items WHERE user_id = '$getID' AND status = 1 ");
-                $cartItem = $cartSelect->fetch_assoc();
+            <?php
+            $cartSelect = $conn->query("SELECT COUNT(cart_id) AS 'count' FROM tbl_cart_items WHERE user_id = '$getID' AND status = 1 ");
+            $cartItem = $cartSelect->fetch_assoc();
             ?>
             <span class="badge bg-success badge-number"><?= $cartItem['count'] ?></span>
           </a>
@@ -247,25 +366,25 @@ $user      = $queryUser->fetch_assoc();
         <li class="nav-item dropdown pe-3">
 
           <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-            <img src="assets/img/profile-img.jpg" alt="Profile" class="rounded-circle">
-            <span class="d-none d-md-block dropdown-toggle ps-2"><?php echo $user['first_name']?> <?php echo $user['last_name']?></span>
+            <img src="https://th.bing.com/th/id/OIP.LG6UqvINZmEBMrUzrhADJAHaHa?pid=ImgDet&rs=1" alt="Profile" class="rounded-circle">
+            <span class="d-none d-md-block dropdown-toggle ps-2"><?php echo $user['first_name'] ?> <?php echo $user['last_name'] ?></span>
           </a><!-- End Profile Iamge Icon -->
 
           <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
             <li class="dropdown-header">
-              <h6><?php echo $user['first_name']?> <?php echo $user['last_name']?></h6>
+              <h6><?php echo $user['first_name'] ?> <?php echo $user['last_name'] ?></h6>
               <span>
-              <?php 
-              $group = "";
-              if($user['group_code'] == 1){
-                $group = "Admin";
-              }else if($user['group_code'] == 2){
-                $group = "User";
-              }else {
-                $group = "Rider";
-              }
-              echo $group;
-              ?></span>
+                <?php
+                $group = "";
+                if ($user['group_code'] == 1) {
+                  $group = "Admin";
+                } else if ($user['group_code'] == 2) {
+                  $group = "User";
+                } else {
+                  $group = "Rider";
+                }
+                echo $group;
+                ?></span>
             </li>
             <li>
               <hr class="dropdown-divider">
@@ -323,143 +442,163 @@ $user      = $queryUser->fetch_assoc();
 
 
       <?php
-        if($getID == 1){
-          ?>
-            <li class="nav-item">
-            <a class="nav-link <?php if ($curPageName != "dashboard.php"){echo 'collapsed';}?>" href="dashboard">
-              <i class="bi bi-grid"></i>
-              <span>Dashboard</span>
-            </a>
-          </li><!-- End Dashboard Nav -->
-              <?php
-        }else {
-          ?>
+      if ($getID == 1) {
+      ?>
         <li class="nav-item">
-        <a class="nav-link <?php if ($curPageName != "home.php"){echo 'collapsed';}?>"  href="home">
-        <i class="bi bi-grid"></i><span>Home</span>
-        </a>
+          <a class="nav-link <?php if ($curPageName != "dashboard.php") {
+                                echo 'collapsed';
+                              } ?>" href="dashboard">
+            <i class="bi bi-grid"></i>
+            <span>Dashboard</span>
+          </a>
+        </li><!-- End Dashboard Nav -->
+      <?php
+      } else {
+      ?>
+        <li class="nav-item">
+          <a class="nav-link <?php if ($curPageName != "home.php") {
+                                echo 'collapsed';
+                              } ?>" href="home">
+            <i class="bi bi-grid"></i><span>Home</span>
+          </a>
 
-      </li><!-- End Components Nav -->
-            <?php
-        }
+        </li><!-- End Components Nav -->
+      <?php
+      }
       ?>
 
 
 
-        <?php
-          if($_SESSION['group_code'] == 2) {
-            ?>
-            
-            <li class="nav-item">
-        <a class="nav-link <?php if ($curPageName != "my_cart.php"){echo 'collapsed';}?>"  href="../ecommerce/my_cart">
-          <i class="bx bx-cart-alt"></i><span>My Cart</span>   
-            <?php 
-                $cartSelect = $conn->query("SELECT COUNT(cart_id) AS 'count' FROM tbl_cart_items WHERE user_id = '$getID' AND status = 1 ");
-                $cartItem = $cartSelect->fetch_assoc();
+      <?php
+      if ($_SESSION['group_code'] == 2) {
+      ?>
+
+        <li class="nav-item">
+          <a class="nav-link <?php if ($curPageName != "my_cart.php") {
+                                echo 'collapsed';
+                              } ?>" href="../ecommerce/my_cart">
+            <i class="bx bx-cart-alt"></i><span>My Cart</span>
+            <?php
+            $cartSelect = $conn->query("SELECT COUNT(cart_id) AS 'count' FROM tbl_cart_items WHERE user_id = '$getID' AND status = 1 ");
+            $cartItem = $cartSelect->fetch_assoc();
             ?>
             <div class="text-end" style="margin-left: 5px;">
-            <span class="badge bg-success badge-number"><?= $cartItem['count'] ?></span>
+              <span class="badge bg-success badge-number"><?= $cartItem['count'] ?></span>
             </div>
-            
-        </a>
-      </li>
 
-      <li class="nav-item">
-        <a class="nav-link <?php if ($curPageName != "my_purchase.php"){echo 'collapsed';}?>"  href="../ecommerce/my_purchase?history=to_pay">
-          <i class="bi bi-menu-button-wide"></i><span>My Purchase</span>
-          <!-- <?php 
-                $cartSelect = $conn->query("SELECT COUNT(order_id) AS 'count' FROM tbl_order_detail_items WHERE user_id = '$getID' AND status = 1 ");
-                $cartItem = $cartSelect->fetch_assoc();
-            ?>
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link <?php if ($curPageName != "my_purchase.php") {
+                                echo 'collapsed';
+                              } ?>" href="../ecommerce/my_purchase?history=to_pay">
+            <i class="bi bi-menu-button-wide"></i><span>My Purchase</span>
+            <!-- <?php
+                  $cartSelect = $conn->query("SELECT COUNT(order_id) AS 'count' FROM tbl_order_detail_items WHERE user_id = '$getID' AND status = 1 ");
+                  $cartItem = $cartSelect->fetch_assoc();
+                  ?>
              <div class="text-end" style="margin-left: 5px;">
             <span class="badge bg-success badge-number"><?= $cartItem['count'] ?></span>
             </div> -->
-        </a>
-      </li>
+          </a>
+        </li>
+<!-- 
+        <li class="nav-item">
+          <a class="nav-link <?php if ($curPageName != "cancelled_transactions.php") {
+                                echo 'collapsed';
+                              } ?>" href="cancelled_transactions">
+            <i class="bi bi-menu-button-wide"></i><span>Completed Transactions</span>
+          </a>
+        </li>
 
-      <li class="nav-item">
-        <a class="nav-link <?php if ($curPageName != "cancelled_transactions.php"){echo 'collapsed';}?>"  href="cancelled_transactions">
-          <i class="bi bi-menu-button-wide"></i><span>Completed Transactions</span>
-        </a>
-      </li>
+        <li class="nav-item">
+          <a class="nav-link <?php if ($curPageName != "cancelled_transactions.php") {
+                                echo 'collapsed';
+                              } ?>" href="cancelled_transactions">
+            <i class="bi bi-menu-button-wide"></i><span>Cancelled Transactions</span>
+          </a>
+        </li> -->
 
-      <li class="nav-item">
-        <a class="nav-link <?php if ($curPageName != "cancelled_transactions.php"){echo 'collapsed';}?>"  href="cancelled_transactions">
-          <i class="bi bi-menu-button-wide"></i><span>Cancelled Transactions</span>
-        </a>
-      </li>
-            
-            <?php
-          }else if($_SESSION['group_code'] == 1){
-            ?>
+      <?php
+      } else if ($_SESSION['group_code'] == 1) {
+      ?>
 
-      <li class="nav-item">
-        <a class="nav-link collapsed" 
-        data-bs-target="#forms-nav" 
-        data-bs-toggle="collapse" href="#">
-          <i class="bi bi-journal-text"></i><span>Transactions</span><i class="bi bi-chevron-down ms-auto"></i>
-        </a>
-        <ul id="forms-nav" class="nav-content collapsed collapse 
-        <?php 
-        if ($curPageName == "approval.php" || $curPageName == "ship.php" || $curPageName == "transit.php"){
+        <li class="nav-item">
+          <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">
+            <i class="bi bi-journal-text"></i><span>Transactions</span><i class="bi bi-chevron-down ms-auto"></i>
+          </a>
+          <ul id="forms-nav" class="nav-content collapsed collapse 
+        <?php
+        if ($curPageName == "approval.php" || $curPageName == "ship.php" || $curPageName == "transit.php" || $curPageName == "completed.php") {
           echo 'show';
         }
         ?>" data-bs-parent="#sidebar-nav">
-          <li>
-            <a href="approval">
-              <i class="bi bi-circle"  style="<?php if ($curPageName == "approval.php"){echo 'background: darkblue;';}?>"></i><span>For Approval</span>
-            </a>
-          </li>
-          <li>
-            <a href="ship">
-              <i class="bi bi-circle" style="<?php if ($curPageName == "ship.php"){echo 'background: darkblue;';}?>"></i><span>To Ship</span>
-            </a>
-          </li>
-          <li>
-            <a href="transit">
-              <i class="bi bi-circle" style="<?php if ($curPageName == "transit.php"){echo 'background: darkblue;';}?>"></i><span>In Transit</span>
-            </a>
-          </li>
-          <li>
-            <a href="forms-validation.html">
-              <i class="bi bi-circle"></i><span>Form Validation</span>
-            </a>
-          </li>
-        </ul>
-      </li>
-            <?php
+            <li>
+              <a href="approval">
+                <i class="bi bi-circle" style="<?php if ($curPageName == "approval.php") {
+                                                  echo 'background: darkblue;';
+                                                } ?>"></i><span>For Approval</span>
+              </a>
+            </li>
+            <li>
+              <a href="ship">
+                <i class="bi bi-circle" style="<?php if ($curPageName == "ship.php") {
+                                                  echo 'background: darkblue;';
+                                                } ?>"></i><span>To Ship</span>
+              </a>
+            </li>
+            <li>
+              <a href="transit">
+                <i class="bi bi-circle" style="<?php if ($curPageName == "transit.php") {
+                                                  echo 'background: darkblue;';
+                                                } ?>"></i><span>In Transit</span>
+              </a>
+            </li>
+            <li>
+              <a href="completed">
+                <i class="bi bi-circle" style="<?php if ($curPageName == "completed.php") {
+                                                  echo 'background: darkblue;';
+                                                } ?>"></i><span>Completed</span>
+              </a>
+            </li>
+          </ul>
+        </li>
+      <?php
 
-          }else if($_SESSION['group_code'] == 3){
-            ?>
-      <li class="nav-item">
-        <a class="nav-link collapsed" 
-        data-bs-target="#forms-nav" 
-        data-bs-toggle="collapse" href="#">
-          <i class="bi bi-journal-text"></i><span>Transactions</span><i class="bi bi-chevron-down ms-auto"></i>
-        </a>
-        <ul id="forms-nav" class="nav-content collapsed collapse 
-        <?php 
-        if ($curPageName == "receiving.php" || $curPageName == "ship.php" || $curPageName == "transit.php"){
+      } else if ($_SESSION['group_code'] == 3) {
+      ?>
+        <li class="nav-item">
+          <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">
+            <i class="bi bi-journal-text"></i><span>Transactions</span><i class="bi bi-chevron-down ms-auto"></i>
+          </a>
+          <ul id="forms-nav" class="nav-content collapsed collapse 
+        <?php
+        if ($curPageName == "receiving.php" || $curPageName == "delivery.php") {
           echo 'show';
         }
         ?>" data-bs-parent="#sidebar-nav">
-          <li>
-            <a href="receiving">
-              <i class="bi bi-circle"  style="<?php if ($curPageName == "receiving.php"){echo 'background: darkblue;';}?>"></i><span>My Receiving</span>
-            </a>
-          </li>
-          <li>
-            <a href="ship">
-              <i class="bi bi-circle" style="<?php if ($curPageName == "ship.php"){echo 'background: darkblue;';}?>"></i><span>To Ship</span>
-            </a>
-          </li>
-        </ul>
-      </li>
-            
-            <?php
-          }
-        
-        ?>
+            <li>
+              <a href="receiving">
+                <i class="bi bi-circle" style="<?php if ($curPageName == "receiving.php") {
+                                                  echo 'background: darkblue;';
+                                                } ?>"></i><span>My Receiving</span>
+              </a>
+            </li>
+            <li>
+              <a href="delivery">
+                <i class="bi bi-circle" style="<?php if ($curPageName == "delivery.php") {
+                                                  echo 'background: darkblue;';
+                                                } ?>"></i><span>To Deliver</span>
+              </a>
+            </li>
+          </ul>
+        </li>
+
+      <?php
+      }
+
+      ?>
 
 
       <!-- <li class="nav-item">
@@ -493,30 +632,34 @@ $user      = $queryUser->fetch_assoc();
 
       <?php
 
-        if($getID == 1){
-          ?>
-            <li class="nav-heading">Admin</li>
+      if ($getID == 1) {
+      ?>
+        <li class="nav-heading">Admin</li>
 
-            <li class="nav-item">
-              <a class="nav-link <?php if ($curPageName != "users.php"){echo 'collapsed';}?>" href="users">
-                <i class="bi bi-person"></i>
-                <span>Users</span>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link <?php if ($curPageName != "products.php"){echo 'collapsed';}?>" href="products">
-                <i class="bi bi-person"></i>
-                <span>Products</span>
-              </a>
-            </li>
-          <?php
-        }
-      
+        <li class="nav-item">
+          <a class="nav-link <?php if ($curPageName != "users.php") {
+                                echo 'collapsed';
+                              } ?>" href="users">
+            <i class="bi bi-person"></i>
+            <span>Users</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link <?php if ($curPageName != "products.php") {
+                                echo 'collapsed';
+                              } ?>" href="products">
+            <i class="bi bi-person"></i>
+            <span>Products</span>
+          </a>
+        </li>
+      <?php
+      }
+
       ?>
 
 
-      
-      
+
+
       <!-- End Profile Page Nav -->
 
 
@@ -525,3 +668,88 @@ $user      = $queryUser->fetch_assoc();
   </aside><!-- End Sidebar-->
 
   <main id="main" class="main">
+
+
+    <script>
+      $(document).on("click", "#updateStatus", function() {
+        const update_id = $(this).data("id");
+        const updateStatus = $("#updateStatus").val();
+        $.ajax({
+          type: 'POST',
+          url: '../server/function_notifications.php',
+          data: {
+            updateStatus: updateStatus,
+            update_id: update_id
+          },
+          success: function(response) {
+            // $("#display_search").html(response);
+            // $("#search").val("");
+            // $(".display_hide").hide();
+          }
+        });
+      });
+
+      $(document).on("click", ".markRead", function() {
+        const markRead = $(".markRead").val();
+        $.ajax({
+          type: 'POST',
+          url: '../server/function_notifications.php',
+          data: {
+            markRead: markRead,
+          },
+          success: function(response) {
+            location.reload();
+          }
+        });
+      })
+
+      $(document).on("click", ".notifViewAll", function() {
+        const notifViewAll = $(".notifViewAll").val();
+        $.ajax({
+          type: 'POST',
+          url: '../server/function_notifications.php',
+          data: {
+            notifViewAll: notifViewAll,
+          },
+          success: function(response) {
+
+          }
+        });
+      })
+
+
+
+      $("#search").on('keypress', function(e) {
+        if (e.which === 13) {
+          // The Enter key (key code 13) was pressed
+          var search = $(this).val();
+          $.ajax({
+            type: 'POST',
+            url: '../server/function_search.php',
+            data: {
+              search: search,
+            },
+            success: function(response) {
+              $("#display_search").html(response);
+              $("#search").val("");
+              $(".display_hide").hide();
+            }
+          });
+        }
+      });
+      // $(document).on("click", "#submit", function(){
+      //   const search = $("#search").val();
+      //   const submit = $("#submit").val();
+      //   $.ajax({
+      //       type: 'POST',
+      //       url: '../server/function_search.php',
+      //       data: {
+      //         search: search,
+      //         submit: submit
+      //       },
+      //       success: function (response) {
+      //         $("#display_search").html(response)
+      //       }
+      //     });
+      // })
+    </script>

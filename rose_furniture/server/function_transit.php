@@ -52,6 +52,19 @@ if(isset($_POST['approve'])){
     VALUES ('In Transit', '$full_name', '$cart_id')";
     mysqli_query($conn, $insert);
 
+    $sqlSelect = mysqli_query($conn, "SELECT detail_code FROM tbl_order_detail_items WHERE cart_id = '$cart_id' ");
+    $fetchSelect = mysqli_fetch_assoc($sqlSelect);
+
+    $notification_text = 'You have a new for confirmation Order No. ' . $fetchSelect['detail_code'];
+    $user_id = $_SESSION['user_id'];
+
+
+    $insertNotif = "INSERT INTO tbl_notifications 
+    (notification_text, sender_id, receiver_id, detail_code)
+    VALUES
+    ('$notification_text', '$user_id', '$rider_id', '".$fetchSelect['detail_code']."')";
+    mysqli_query($conn, $insertNotif);
+
 
 }
 

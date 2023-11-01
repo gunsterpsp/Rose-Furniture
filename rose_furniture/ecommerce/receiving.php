@@ -1,4 +1,10 @@
-<?php include '../includes/header_ecommerce.php'; ?>
+<?php include '../includes/header_ecommerce.php'; 
+if(!isset($_SESSION['user_id'])){
+  header('Location: ../main/home');
+  exit;
+}
+
+?>
 
 
             <!-- Recent Sales -->
@@ -18,6 +24,7 @@
                         <th scope="col">Price</th>
                         <th scope="col">Total Amount</th>
                         <th scope="col">Payment</th>
+                        <th scope="col">Tracking No.</th>
                         <th scope="col">Action</th>
                       </tr>
                     </thead>
@@ -53,6 +60,7 @@
         { "data": "price"  },
         { "data": "total_amount"  },
         { "data": "payment_method"  },
+        { "data": "tracking_no"  },
         { "data": "action"  },
         ]
       });
@@ -60,9 +68,18 @@
 
       $(document).on("click", ".approve", function(){
         const order_id = $(this).data("id")
+        const code = $(this).data("code") 
         const approve = $(".approve").val()
 
-        $.ajax({
+        Swal.fire({
+        title: 'Do you want to confirm this order?'+ ' '+code,
+        showDenyButton: true,
+        confirmButtonText: 'Yes',
+      }).then((result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+          Swal.fire('Order '+code+' has been confirm', '', 'success');
+          $.ajax({
           type: 'POST',
           url: '../server/function_receiving.php',
           data: {
@@ -73,6 +90,11 @@
             $('#example').DataTable().ajax.reload();
           }
         });
+
+        }
+      })
+
+
 
       })
 

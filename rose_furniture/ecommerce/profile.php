@@ -7,6 +7,12 @@ $user_id = $_GET["user_id"];
 $sql = mysqli_query($conn, "SELECT * FROM tbl_users WHERE user_id = '$user_id' ");
 $row = mysqli_fetch_assoc($sql);
 
+if(!isset($_SESSION['user_id'])){
+  header('Location: ../main/home');
+  exit;
+}
+
+
 ?>
 
     <div class="pagetitle">

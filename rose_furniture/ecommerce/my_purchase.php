@@ -23,18 +23,24 @@ $history = $_GET['history'];
           </button>
           <button class="btn btn-gray"><a href="my_purchase?history=to_ship">To Ship 
           <?php 
-                $cartSelect = $conn->query("SELECT COUNT(order_id) AS 'count' FROM tbl_order_detail_items WHERE user_id = '$getID' AND to_ship IN (1, 2) AND to_pickup IN (0,1) ");
+                $cartSelect = $conn->query("SELECT COUNT(order_id) AS 'count' FROM tbl_order_detail_items WHERE user_id = '$getID' AND to_ship IN (1, 2) AND to_pickup IN (0, 1, 2) AND in_transit IN (0,1,2) AND to_deliver IN (0,1) ");
                 $cartItem = $cartSelect->fetch_assoc();
             ?>
            <span class="badge bg-success badge-number"><?= $cartItem['count'] ?></span> 
           </a></button>
           <button class="btn btn-gray"><a href="my_purchase?history=to_receive">To Receive 
           <?php 
-                $cartSelect = $conn->query("SELECT COUNT(order_id) AS 'count' FROM tbl_order_detail_items WHERE user_id = '$getID' AND to_deliver = 1 ");
+                $cartSelect = $conn->query("SELECT COUNT(order_id) AS 'count' FROM tbl_order_detail_items WHERE user_id = '$getID' AND to_deliver IN (1, 2) AND to_complete = 1 ");
                 $cartItem = $cartSelect->fetch_assoc();
             ?>
            <span class="badge bg-success badge-number"><?= $cartItem['count'] ?></span> 
           </a></button>
+          <button class="btn btn-gray">
+            <a href="my_purchase?history=completed">Completed</a>
+          </button>
+          <button class="btn btn-gray">
+            <a href="my_purchase?history=cancelled">Cancelled</a>
+          </button>
       </nav>
     </div>
 <!-- 
@@ -80,7 +86,7 @@ $history = $_GET['history'];
                         <div style="position: relative;">
                           <button class="btn btn-danger btn-sm deleteItem" data-name="<?= $row['product_name'] ?>" data-id="<?= $row['order_id'] ?>" style="position: absolute; right: 3px; top: 3px;">X</button>
                         </div>
-                        <a href="view_order?code=<?= $row['order_id']; ?>&item=<?= $row['cart_id']; ?>">
+                        <a href="view_order?code=<?= $row['order_id']; ?>&item=<?= $row['cart_id']; ?>&track_no=<?= $row['detail_code'] ?>">
                       <div class="border">
                       <img src="../ecommerce/uploads/<?= $row['product_image'] ?>" width="100%" height="150px" alt="">
                       </div>
@@ -89,10 +95,10 @@ $history = $_GET['history'];
                           <label class=""><?= $row['product_name'] ?></label>
                         </div>
                         <div>
-                        <label class="">Price/ea : <?= $row['price'] ?> | Qty : <?= $row['quantity'] ?></label>
+                        <label class="">Price/ea : ₱<?= $row['price'] ?> | Qty : <?= $row['quantity'] ?></label>
                         </div>
                         <div>
-                        <label class="">Total : <?= $totalQty ?></label>
+                        <label class="">Total : ₱<?= $totalQty ?></label>
                         </div>
                       </div>
   
@@ -120,10 +126,10 @@ $history = $_GET['history'];
                 <?php 
                   include '../database/connection.php';
 
-                  $sql = mysqli_query($conn, "SELECT t1.cart_id, t1.detail_code, t1.order_id, t1.product_code, t1.product_name, 
+                  $sql = mysqli_query($conn, "SELECT t1.to_deliver, t1.in_transit, t1.to_pickup, t1.cart_id, t1.detail_code, t1.order_id, t1.product_code, t1.product_name, 
                   t1.price, t1.quantity, t1.user_id, t1.to_pay, t2.product_image FROM 
                   tbl_order_detail_items t1 LEFT JOIN tbl_products t2 ON 
-                  t1.product_code = t2.product_code WHERE t1.user_id = '".$_SESSION['user_id']."' AND t1.to_ship IN (1, 2) AND t1.to_pickup IN (0,1)");
+                  t1.product_code = t2.product_code WHERE t1.user_id = '".$_SESSION['user_id']."' AND t1.to_ship IN (1, 2) AND t1.to_pickup IN (0, 1, 2) AND t1.in_transit IN (0,1,2) AND t1.to_deliver IN (0,1) ");
 
                   if(mysqli_num_rows($sql)){
 
@@ -141,7 +147,7 @@ $history = $_GET['history'];
                         <div class="col-xxl-4 col-md-3 btn-link">
                         
                           <div class="card info-card">
-                            <a href="view_order?code=<?= $row['order_id']; ?>&item=<?= $row['cart_id']; ?>">
+                            <a href="view_order?code=<?= $row['order_id']; ?>&item=<?= $row['cart_id']; ?>&track_no=<?= $row['detail_code'] ?>">
                           <div class="border">
                           <img src="../ecommerce/uploads/<?= $row['product_image'] ?>" width="100%" height="150px" alt="">
                           </div>
@@ -150,10 +156,10 @@ $history = $_GET['history'];
                               <label class=""><?= $row['product_name'] ?></label>
                             </div>
                             <div>
-                            <label class="">Price/ea : <?= $row['price'] ?> | Qty : <?= $row['quantity'] ?></label>
+                            <label class="">Price/ea : ₱<?= $row['price'] ?> | Qty : <?= $row['quantity'] ?></label>
                             </div>
                             <div>
-                            <label class="">Total : <?= $totalQty ?></label>
+                            <label class="">Total : ₱<?= $totalQty ?></label>
                             </div>
                           </div>
   
@@ -183,7 +189,7 @@ $history = $_GET['history'];
               $sql = mysqli_query($conn, "SELECT t1.cart_id, t1.detail_code, t1.order_id, t1.product_code, t1.product_name, 
               t1.price, t1.quantity, t1.user_id, t1.to_pay, t2.product_image FROM 
               tbl_order_detail_items t1 LEFT JOIN tbl_products t2 ON 
-              t1.product_code = t2.product_code WHERE t1.user_id = '".$_SESSION['user_id']."' AND t1.to_deliver = 1");
+              t1.product_code = t2.product_code WHERE t1.user_id = '".$_SESSION['user_id']."' AND t1.to_deliver IN (1, 2) AND to_complete IN (1)");
 
               if(mysqli_num_rows($sql)){
                 while($row = mysqli_fetch_assoc($sql)){
@@ -200,7 +206,7 @@ $history = $_GET['history'];
                     <div class="col-xxl-4 col-md-3 btn-link">
                     
                       <div class="card info-card">
-                        <a href="view_order?code=<?= $row['order_id']; ?>&item=<?= $row['cart_id']; ?>">
+                        <a href="view_order?code=<?= $row['order_id']; ?>&item=<?= $row['cart_id']; ?>&track_no=<?= $row['detail_code'] ?>">
                       <div class="border">
                       <img src="../ecommerce/uploads/<?= $row['product_image'] ?>" width="100%" height="150px" alt="">
                       </div>
@@ -209,10 +215,10 @@ $history = $_GET['history'];
                           <label class=""><?= $row['product_name'] ?></label>
                         </div>
                         <div>
-                        <label class="">Price/ea : <?= $row['price'] ?> | Qty : <?= $row['quantity'] ?></label>
+                        <label class="">Price/ea : ₱<?= $row['price'] ?> | Qty : <?= $row['quantity'] ?></label>
                         </div>
                         <div>
-                        <label class="">Total : <?= $totalQty ?></label>
+                        <label class="">Total : ₱<?= $totalQty ?></label>
                         </div>
                       </div>
 
@@ -234,6 +240,124 @@ $history = $_GET['history'];
             
             ?>
                 <?php
+              }else if($_GET['history'] == "completed"){
+                ?>
+            <?php 
+              include '../database/connection.php';
+
+              $sql = mysqli_query($conn, "SELECT t1.cart_id, t1.detail_code, t1.order_id, t1.product_code, t1.product_name, 
+              t1.price, t1.quantity, t1.user_id, t1.to_pay, t2.product_image FROM 
+              tbl_order_detail_items t1 LEFT JOIN tbl_products t2 ON 
+              t1.product_code = t2.product_code WHERE t1.user_id = '".$_SESSION['user_id']."' AND to_complete = 2");
+
+              if(mysqli_num_rows($sql)){
+                while($row = mysqli_fetch_assoc($sql)){
+
+                  $totalQty = $row['price'] * $row['quantity'];
+
+                  $sum = $conn->query("SELECT price, SUM(quantity) AS 'quantity' FROM tbl_cart_items WHERE user_id = '".$_SESSION['user_id']."' ");
+                  $fetchSum      = $sum->fetch_assoc();
+                  
+                  $totalSum = $fetchSum['price'] * $fetchSum['quantity'];
+                
+                  ?>
+                  
+                    <div class="col-xxl-4 col-md-3 btn-link">
+                    
+                      <div class="card info-card">
+                        <a href="view_order?code=<?= $row['order_id']; ?>&item=<?= $row['cart_id']; ?>&track_no=<?= $row['detail_code'] ?>">
+                      <div class="border">
+                      <img src="../ecommerce/uploads/<?= $row['product_image'] ?>" width="100%" height="150px" alt="">
+                      </div>
+                      <div style="margin-left: 5px;">
+                      <div class="ml-2 ">
+                          <label class=""><?= $row['product_name'] ?></label>
+                        </div>
+                        <div>
+                        <label class="">Price/ea : ₱<?= $row['price'] ?> | Qty : <?= $row['quantity'] ?></label>
+                        </div>
+                        <div>
+                        <label class="">Total : ₱<?= $totalQty ?></label>
+                        </div>
+                      </div>
+
+                      </div>
+                      </a>
+                    </div>  
+                    
+                  <?php
+                }
+              }else {
+                ?>
+                <div class="text-center">
+                  <h1>No available items!</h1>
+                </div>
+              <?php
+              }
+
+
+            
+            ?>
+            <?php
+              }else if($_GET['history'] == "cancelled"){
+                ?>
+            <?php 
+              include '../database/connection.php';
+
+              $sql = mysqli_query($conn, "SELECT t1.cart_id, t1.detail_code, t1.order_id, t1.product_code, t1.product_name, 
+              t1.price, t1.quantity, t1.user_id, t1.to_pay, t2.product_image FROM 
+              tbl_order_detail_items t1 LEFT JOIN tbl_products t2 ON 
+              t1.product_code = t2.product_code WHERE t1.user_id = '".$_SESSION['user_id']."' AND status = 0");
+
+              if(mysqli_num_rows($sql)){
+                while($row = mysqli_fetch_assoc($sql)){
+
+                  $totalQty = $row['price'] * $row['quantity'];
+
+                  $sum = $conn->query("SELECT price, SUM(quantity) AS 'quantity' FROM tbl_cart_items WHERE user_id = '".$_SESSION['user_id']."' ");
+                  $fetchSum      = $sum->fetch_assoc();
+                  
+                  $totalSum = $fetchSum['price'] * $fetchSum['quantity'];
+                
+                  ?>
+                  
+                    <div class="col-xxl-4 col-md-3 btn-link">
+                    
+                      <div class="card info-card">
+                        <a href="view_order?code=<?= $row['order_id']; ?>&item=<?= $row['cart_id']; ?>&track_no=<?= $row['detail_code'] ?>">
+                      <div class="border">
+                      <img src="../ecommerce/uploads/<?= $row['product_image'] ?>" width="100%" height="150px" alt="">
+                      </div>
+                      <div style="margin-left: 5px;">
+                      <div class="ml-2 ">
+                          <label class=""><?= $row['product_name'] ?></label>
+                        </div>
+                        <div>
+                        <label class="">Price/ea : ₱<?= $row['price'] ?> | Qty : <?= $row['quantity'] ?></label>
+                        </div>
+                        <div>
+                        <label class="">Total : ₱<?= $totalQty ?></label>
+                        </div>
+                      </div>
+
+                      </div>
+                      </a>
+                    </div>  
+                    
+                  <?php
+                }
+              }else {
+                ?>
+                <div class="text-center">
+                  <h1>No available items!</h1>
+                </div>
+              <?php
+              }
+
+
+            
+            ?>
+            <?php
               }
             
             ?>

@@ -1,4 +1,10 @@
-<?php include '../includes/header_ecommerce.php'; ?>
+<?php include '../includes/header_ecommerce.php'; 
+if(!isset($_SESSION['user_id'])){
+  header('Location: ../main/home');
+  exit;
+}
+
+?>
 
 
 <!-- Recent Sales -->
@@ -144,13 +150,13 @@
     } else {
 
       Swal.fire({
-        title: 'Do you want to confirm this order?',
+        title: 'Do you want to prepare to ship this order?',
         showDenyButton: true,
         confirmButtonText: 'Yes',
       }).then((result) => {
         /* Read more about isConfirmed, isDenied below */
         if (result.isConfirmed) {
-          Swal.fire('Saved!', '', 'success');
+          Swal.fire('Order has been prepared!', '', 'success');
 
           $.ajax({
             type: 'POST',
@@ -203,14 +209,22 @@
     const approve_ship = $(".approve_ship").val()
     const last_departure = $("#last_departure").val()
 
+    if(action_id == 0) return alert("Please select an action")
+    if(location_id == "") return alert("Please set a location");
+
     Swal.fire({
-      title: 'Do you want to confirm this order?',
+      title: 'This is not ireversable, Do you want to confirm this order?',
       showDenyButton: true,
       confirmButtonText: 'Yes',
     }).then((result) => {
       /* Read more about isConfirmed, isDenied below */
       if (result.isConfirmed) {
-        Swal.fire('Saved!', '', 'success');
+        if(action_id == "Arrived"){
+          Swal.fire('Order has been arrived!', '', 'success');
+        }else {
+          Swal.fire('Order has been departed!', '', 'success');
+        }
+
 
         $.ajax({
           type: 'POST',
@@ -230,8 +244,7 @@
         });
       }
     })
-
-
-
   })
+
+
 </script>

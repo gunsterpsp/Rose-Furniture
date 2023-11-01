@@ -22,6 +22,7 @@ if(isset($_POST['addItem'])){
 
     $update = "UPDATE tbl_products SET product_quantity = '$totalQty' WHERE product_code = '$product_code' ";
     mysqli_query($conn, $update);
+    
 
 }
 
@@ -56,19 +57,6 @@ if(isset($_POST['confirmItem'])){
     $total_price = $_POST['total_price'];
     $payment_method = $_POST['payment_method'];
 
-
-    // function generateRandomString($length = 10) {
-    //     $length = max(1, (int)$length);
-    //     $randomBytes = random_bytes($length);
-    //     $randomString = base64_encode($randomBytes);
-    //     $randomString = str_replace(['/', '+', '='], '', $randomString);
-    //     $randomString = substr($randomString, 0, $length);
-    
-    //     return $randomString;
-    // }
-    // $randomString = generateRandomString(20);
-    // echo $randomString;
-
     $sql_header = "INSERT INTO tbl_order_header_items 
     (full_name, address, contact_no, payment_method, total_price, remarks, user_id, header_code) 
     VALUES ('$full_name', '$delivery_address', '$contact_no', '$payment_method', '$total_price', 
@@ -77,6 +65,7 @@ if(isset($_POST['confirmItem'])){
 
     $sql_select = mysqli_query($conn, "SELECT * FROM tbl_cart_items WHERE user_id = '".$_SESSION['user_id']."' ");
     
+
     while ($row = mysqli_fetch_assoc($sql_select)) {
         $uniqueID = substr(md5(uniqid(mt_rand(), true)), 0, 20);
     
@@ -90,11 +79,21 @@ if(isset($_POST['confirmItem'])){
         $sql2 = "INSERT INTO tbl_order_process 
         (order_text, detail_code, cart_id) VALUES ('Order Placed', '$uniqueID', '".$row['cart_id']."')";
         mysqli_query($conn, $sql2);
+
+        $notification_text = "You have a new for approval order with a tracking no : " . $uniqueID;
+        $user_id = $_SESSION['user_id'];
+    
+        $sqlInsertNotif = "INSERT INTO tbl_notifications 
+        (notification_text, sender_id, receiver_id, detail_code)
+        VALUES
+        ('$notification_text', '$user_id', '1', '$uniqueID')";
+        mysqli_query($conn, $sqlInsertNotif);
     }
     
 
     $sql_delete = "DELETE FROM tbl_cart_items WHERE user_id = '".$_SESSION['user_id']."' ";
     mysqli_query($conn, $sql_delete);
+
 
 
 

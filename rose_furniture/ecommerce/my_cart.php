@@ -1,8 +1,13 @@
 
-<?php include '../includes/header_ecommerce.php'; ?>
-<style>
+<?php include '../includes/header_ecommerce.php'; 
+if(!isset($_SESSION['user_id'])){
+  header('Location: ../main/home');
+  exit;
+}
 
-</style>
+?>
+
+
 
     <div class="pagetitle">
       <h1>My Cart</h1>

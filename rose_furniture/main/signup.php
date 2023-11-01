@@ -27,7 +27,7 @@
 
 		<div class="member">
 		Already a member?
-		<a href="../forms/login.php">Click here</a>
+		<a href="login">Click here</a>
 		</div>
      </form>
 </div>

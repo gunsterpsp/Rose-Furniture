@@ -9,10 +9,10 @@ $data = array();
 while ($row = mysqli_fetch_assoc($sql))
 {
 $approve = "<button class='btn btn-success approve' 
-data-id='".$row['order_id']."' >
+data-id='".$row['order_id']."' data-code='".$row['detail_code']."'>
 <i class='bx bx-check'></i></button>
 <button class='btn btn-danger cancel' 
-data-id='".$row['order_id']."' >
+data-id='".$row['order_id']."' data-code='".$row['detail_code']."'>
 <i class='bx bx-x'></i></button>";
 
 $action = "
@@ -28,6 +28,7 @@ $data[] = array(
   "quantity"=> $row['quantity'],
   "total_amount"=> '₱'.$row['price'] * $row['quantity'],
   "payment_method"=> $row['payment_method'],
+  "tracking_no"=> $row['detail_code'],
   "action"=> $action,
 );
 }

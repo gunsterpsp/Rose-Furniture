@@ -18,6 +18,7 @@
             <th scope="col">Price</th>
             <th scope="col">Total Amount</th>
             <th scope="col">Payment</th>
+            <th scope="col">Tracking No.</th>
             <th scope="col">Action</th>
           </tr>
         </thead>
@@ -69,6 +70,9 @@
         "data": "payment_method"
       },
       {
+        "data": "tracking_no"
+      },
+      {
         "data": "action"
       },
     ]
@@ -77,17 +81,18 @@
 
   $(document).on("click", ".approve", function() {
     const order_id = $(this).data("id")
+    const code = $(this).data("code")
     const approve = $(".approve").val()
 
 
     Swal.fire({
-      title: 'Do you want all this item to order?',
+      title: 'Do you want to approve this to order?'+ ' ' +code,
       showDenyButton: true,
       confirmButtonText: 'Yes',
     }).then((result) => {
       /* Read more about isConfirmed, isDenied below */
       if (result.isConfirmed) {
-        Swal.fire('Saved!', '', 'success');
+        Swal.fire('Order No. '+code+' has been approved!', '', 'success');
 
         $.ajax({
           type: 'POST',

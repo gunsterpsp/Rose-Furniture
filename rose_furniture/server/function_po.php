@@ -29,7 +29,7 @@ if(isset($_POST['deleteItem'])){
 
     $order_id = $_POST['order_id'];
 
-    $sql2 = mysqli_query($conn,"SELECT quantity, product_code FROM tbl_order_detail_items WHERE order_id = '$order_id' ");
+    $sql2 = mysqli_query($conn,"SELECT quantity, product_code, cart_id, detail_code FROM tbl_order_detail_items WHERE order_id = '$order_id' ");
     $fetch2 = mysqli_fetch_assoc($sql2);
 
     $sql3 = mysqli_query($conn, "SELECT product_quantity FROM tbl_products WHERE product_code = '".$fetch2['product_code']."' ");
@@ -39,10 +39,29 @@ if(isset($_POST['deleteItem'])){
 
     $update = "UPDATE tbl_products SET product_quantity = '$updateQty' WHERE product_code = '".$fetch2['product_code']."' ";
     mysqli_query($conn, $update);
+
+    $cart_id = $fetch2['cart_id'];
     
+    $sql_Insert = "INSERT INTO tbl_order_process 
+    (order_text, cart_id) 
+    VALUES 
+    ('Cancelled', '$cart_id')";
+    mysqli_query($conn, $sql_Insert);
 
     $sql = "UPDATE tbl_order_detail_items SET status = 0  WHERE order_id = $order_id ";
     mysqli_query($conn, $sql);
+
+    $updateCancelled = "UPDATE tbl_notifications SET status = 0 WHERE detail_code = '".$fetch2['detail_code']."'";
+    mysqli_query($conn, $updateCancelled);
+
+    $notification_text = 'Order has been cancelled with a tracking no : ' . $fetch2['detail_code'];
+    $user_id = $_SESSION['user_id'];
+
+    $sql_Insert2 = "INSERT INTO tbl_notifications 
+    (notification_text, sender_id, receiver_id, detail_code) 
+    VALUES 
+    ('$notification_text', '$user_id', '1', '".$fetch2['detail_code']."')";
+    mysqli_query($conn, $sql_Insert2);
 
 
 
@@ -87,7 +106,6 @@ if(isset($_POST['confirmItem'])){
 
 
     }
-    
 
     $sql_delete = "DELETE FROM tbl_cart_items WHERE user_id = '".$_SESSION['user_id']."' ";
     mysqli_query($conn, $sql_delete);
