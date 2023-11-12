@@ -185,6 +185,7 @@ if (!isset($_SESSION['user_id'])) {
             $("#staticBackdrop").modal("hide");
             $('#example').DataTable().ajax.reload();
             Swal.fire('Order has been delivered!', '', 'success');
+            $("#amount").val("")
           }
         });
 

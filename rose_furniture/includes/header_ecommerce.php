@@ -7,6 +7,27 @@ $username1 = $_SESSION['username'];
 $getID     = $_SESSION['user_id'];
 $queryUser = $conn->query("SELECT * FROM `tbl_users` WHERE `user_id` = '" . $getID . "' ");
 $user      = $queryUser->fetch_assoc();
+
+// 2023-11-12 01:23:39
+@$date = new DateTime('now', new DateTimeZone('Asia/Manila'));
+@$days_to_subtract = 3;
+// Use the modify method to subtract days
+@$date->modify("-$days_to_subtract days");
+@$new_date = @$date->format('Y-m-d H:i:s');
+
+@$sqlDate = mysqli_query($conn, "SELECT date_completed FROM tbl_order_detail_items WHERE refund_status = 1 ");
+@$fetchDate = mysqli_fetch_assoc($sqlDate);
+
+if(@$new_date > @$fetchDate['date_completed']){
+  @$updateRefund = "UPDATE tbl_order_detail_items SET refund_status = 0 WHERE refund_status = 1 ";
+  mysqli_query($conn, $updateRefund);
+}
+
+if(!isset($_SESSION['user_id'])){
+  header('Location: ../main/home');
+  die();
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -442,7 +463,7 @@ $user      = $queryUser->fetch_assoc();
 
 
       <?php
-      if ($getID == 1) {
+      if ($_SESSION['group_code'] == 1) {
       ?>
         <li class="nav-item">
           <a class="nav-link <?php if ($curPageName != "dashboard.php") {
@@ -453,6 +474,8 @@ $user      = $queryUser->fetch_assoc();
           </a>
         </li><!-- End Dashboard Nav -->
       <?php
+      }else if($_SESSION['group_code'] == 3){
+
       } else {
       ?>
         <li class="nav-item">
@@ -530,7 +553,9 @@ $user      = $queryUser->fetch_assoc();
           </a>
           <ul id="forms-nav" class="nav-content collapsed collapse 
         <?php
-        if ($curPageName == "approval.php" || $curPageName == "ship.php" || $curPageName == "transit.php" || $curPageName == "completed.php") {
+        if ($curPageName == "approval.php" || 
+        $curPageName == "ship.php" || $curPageName == "transit.php" 
+        || $curPageName == "completed.php" || $curPageName == "refund.php") {
           echo 'show';
         }
         ?>" data-bs-parent="#sidebar-nav">
@@ -562,6 +587,13 @@ $user      = $queryUser->fetch_assoc();
                                                 } ?>"></i><span>Completed</span>
               </a>
             </li>
+            <li>
+              <a href="refund">
+                <i class="bi bi-circle" style="<?php if ($curPageName == "refund.php") {
+                                                  echo 'background: darkblue;';
+                                                } ?>"></i><span>For Refund</span>
+              </a>
+            </li>
           </ul>
         </li>
       <?php
@@ -574,7 +606,7 @@ $user      = $queryUser->fetch_assoc();
           </a>
           <ul id="forms-nav" class="nav-content collapsed collapse 
         <?php
-        if ($curPageName == "receiving.php" || $curPageName == "delivery.php") {
+        if ($curPageName == "receiving.php" || $curPageName == "delivery.php" || $curPageName == "for_refund.php") {
           echo 'show';
         }
         ?>" data-bs-parent="#sidebar-nav">
@@ -590,6 +622,13 @@ $user      = $queryUser->fetch_assoc();
                 <i class="bi bi-circle" style="<?php if ($curPageName == "delivery.php") {
                                                   echo 'background: darkblue;';
                                                 } ?>"></i><span>To Deliver</span>
+              </a>
+            </li>
+            <li>
+              <a href="for_refund">
+                <i class="bi bi-circle" style="<?php if ($curPageName == "for_refund.php") {
+                                                  echo 'background: darkblue;';
+                                                } ?>"></i><span>For Refund</span>
               </a>
             </li>
           </ul>

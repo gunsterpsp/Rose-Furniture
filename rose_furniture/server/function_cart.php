@@ -50,23 +50,30 @@ if(isset($_POST['deleteItem'])){
 }
 
 if(isset($_POST['confirmItem'])){
-    
+
+
+
+    $count = count($_POST['cart_id']);
+
     $full_name = $_POST['full_name'];
     $delivery_address = $_POST['delivery_address'];
     $contact_no = $_POST['contact_no'];
     $total_price = $_POST['total_price'];
-    $payment_method = $_POST['payment_method'];
+    $payment_method = 'Cash On Delivery';
 
     $sql_header = "INSERT INTO tbl_order_header_items 
-    (full_name, address, contact_no, payment_method, total_price, remarks, user_id, header_code) 
+    (full_name, address, contact_no, payment_method, total_price, remarks, user_id) 
     VALUES ('$full_name', '$delivery_address', '$contact_no', '$payment_method', '$total_price', 
-    '', '".$_SESSION['user_id']."', '$randomString')";
+    '', '".$_SESSION['user_id']."')";
     mysqli_query($conn, $sql_header);
 
-    $sql_select = mysqli_query($conn, "SELECT * FROM tbl_cart_items WHERE user_id = '".$_SESSION['user_id']."' ");
-    
+    for ($i=0; $i <$count; $i++) { 
+        
+    $cart_id = $_POST['cart_id'][$i];
 
-    while ($row = mysqli_fetch_assoc($sql_select)) {
+    $sql_select = mysqli_query($conn, "SELECT * FROM tbl_cart_items WHERE cart_id = '$cart_id' ");
+    $row = mysqli_fetch_assoc($sql_select);
+
         $uniqueID = substr(md5(uniqid(mt_rand(), true)), 0, 20);
     
         $sql_detail = "INSERT INTO tbl_order_detail_items 
@@ -88,13 +95,101 @@ if(isset($_POST['confirmItem'])){
         VALUES
         ('$notification_text', '$user_id', '1', '$uniqueID')";
         mysqli_query($conn, $sqlInsertNotif);
+
+
+        $sql_delete = "DELETE FROM tbl_cart_items WHERE cart_id = '$cart_id' ";
+        mysqli_query($conn, $sql_delete);
     }
+
+
+    
+    // $full_name = $_POST['full_name'];
+    // $delivery_address = $_POST['delivery_address'];
+    // $contact_no = $_POST['contact_no'];
+    // $total_price = $_POST['total_price'];
+    // $payment_method = 'Cash On Delivery';
+
+
+    // $sql_header = "INSERT INTO tbl_order_header_items 
+    // (full_name, address, contact_no, payment_method, total_price, remarks, user_id, header_code) 
+    // VALUES ('$full_name', '$delivery_address', '$contact_no', '$payment_method', '$total_price', 
+    // '', '".$_SESSION['user_id']."', '$randomString')";
+    // mysqli_query($conn, $sql_header);
+
+    // $sql_select = mysqli_query($conn, "SELECT * FROM tbl_cart_items WHERE user_id = '".$_SESSION['user_id']."' ");
     
 
-    $sql_delete = "DELETE FROM tbl_cart_items WHERE user_id = '".$_SESSION['user_id']."' ";
-    mysqli_query($conn, $sql_delete);
+    // while ($row = mysqli_fetch_assoc($sql_select)) {
+    //     $uniqueID = substr(md5(uniqid(mt_rand(), true)), 0, 20);
+    
+    //     $sql_detail = "INSERT INTO tbl_order_detail_items 
+    //     (product_code, product_name, price, quantity, payment_method, user_id, detail_code, cart_id) 
+    //     VALUES ('".$row['product_code']."', '".$row['product_name']."', 
+    //     '".$row['price']."', '".$row['quantity']."', '$payment_method', 
+    //     '".$_SESSION['user_id']."', '$uniqueID', '".$row['cart_id']."')";
+    //     mysqli_query($conn, $sql_detail);
+    
+    //     $sql2 = "INSERT INTO tbl_order_process 
+    //     (order_text, detail_code, cart_id) VALUES ('Order Placed', '$uniqueID', '".$row['cart_id']."')";
+    //     mysqli_query($conn, $sql2);
+
+    //     $notification_text = "You have a new for approval order with a tracking no : " . $uniqueID;
+    //     $user_id = $_SESSION['user_id'];
+    
+    //     $sqlInsertNotif = "INSERT INTO tbl_notifications 
+    //     (notification_text, sender_id, receiver_id, detail_code)
+    //     VALUES
+    //     ('$notification_text', '$user_id', '1', '$uniqueID')";
+    //     mysqli_query($conn, $sqlInsertNotif);
+    // }
+    
+
+    // $sql_delete = "DELETE FROM tbl_cart_items WHERE user_id = '".$_SESSION['user_id']."' ";
+    // mysqli_query($conn, $sql_delete);
 
 
+
+
+
+}
+
+if(isset($_POST['view_id'])){
+
+
+    $count = count($_POST['cart_id']);
+    $totalSum = 0; // Initialize total sum
+    
+    for ($i = 0; $i < $count; $i++) {
+        $cart_id = $_POST['cart_id'][$i];
+    
+    
+        $sumQuery = mysqli_query($conn, "SELECT price, SUM(quantity) AS 'quantity' FROM tbl_cart_items WHERE cart_id = $cart_id AND status = 1");
+        $fetchSum = mysqli_fetch_assoc($sumQuery);
+    
+        // Calculate the total sum for each cart_id
+        $totalSum += $fetchSum['price'] * $fetchSum['quantity'];
+    }
+    
+    $userData = mysqli_query($conn, "SELECT * FROM tbl_users WHERE user_id = '".$_SESSION['user_id']."' ");
+    $userRow = mysqli_fetch_assoc($userData);
+
+    $full_name = $userRow['first_name'] . ' ' . $userRow['last_name'];
+
+
+    $delivery_address = $userRow['address'];
+    $contact_no = $userRow['contact_no'];
+
+
+    $data = array(
+        "full_name"=> $full_name,
+        "delivery_address"=> $delivery_address,
+        "contact_no"=> $contact_no,
+        "total_price"=> $totalSum
+        
+    );
+
+
+    echo json_encode($data);
 
 
 

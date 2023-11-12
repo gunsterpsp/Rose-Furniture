@@ -209,7 +209,7 @@ $row = $query->fetch_assoc();
               <div class="activity">
 
                 <div class="activity-item d-flex">
-                  <div style="margin-right: 5px;"><b>Price : </b><?= $row['product_price'] ?></div>
+                  <div style="margin-right: 5px;"><b>Price : </b>₱<?= $row['product_price'] ?></div>
                 </div>
                 <div class="activity-item d-flex">
                   <div style="margin-right: 5px;"><b>Category : </b><?= $row['product_category'] ?></div>

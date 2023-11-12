@@ -12,65 +12,102 @@
 </head>
 <body>
 <div class="log">
-<?php
-    include '../database/connection.php';
-    error_reporting(0);
-
-        global $conn;
-        if (isset($_POST['login_Submit'])){
-            if(isset($_POST['login_userCode']) && isset($_POST['login_userPass'])){
-              if(!empty($_POST['login_userCode']) && !empty($_POST['login_userPass'])){
-                      $login_userCode =  mysqli_real_escape_string($conn, $_POST['login_userCode']);
-                      $login_userPass =  mysqli_real_escape_string($conn, $_POST['login_userPass']);
-                        $dispRM_users = $conn->query("SELECT * FROM `tbl_users`
-                         where `username` = '$login_userCode' and `password` = '$login_userPass'");			
-                           $auth_user = $dispRM_users->fetch_assoc();
-                         if (($_POST['login_userCode'] == $auth_user['username']) && $_POST['login_userPass'] == $auth_user['password']) {
-                              $_SESSION['user_id'] = $auth_user['user_id'];
-                              $_SESSION['username'] = $auth_user['username'];
-                              $_SESSION['group_code'] = $auth_user['group_code'];
-                         if (stripos($auth_user['status'], '0') !== FALSE ) {
-                      echo '<script type="text/javascript">
-                      Swal.fire({
-                        position: "center",
-                        icon: "warning",
-                        text: "Sorry, your account has been deactivate. Please contact the costumer service.",
-                        showConfirmButton: false,
-                        timer: 2500
-                      })
-                        </script>';
-                    }
-                    else if (stripos($auth_user["user_session"], "1") !== FALSE) {
-                      header("location: ../ecommerce/dashboard");   
-                    }
-                    else {
-                        header("location: ../ecommerce/home"); 
-                    }
-                  }else {
-                    echo '<script type="text/javascript">
-                    Swal.fire({
-                      position: "center",
-                      icon: "warning",
-                      text: "Username and Password is Incorrect. Please sign up or try it again.",
-                      showConfirmButton: false,
-                      timer: 2500
-                    })
-                      </script>';
-                  }
-              }
-            }    
-          }
-    ?>
-     <form action="login.php" class="log_form" id="loginForm" method="post">
+    <form method="post">
 		<img src ="../assets/img/logo.png" class ="image">
-		<?php if (isset($_GET['error'])) { ?>
-     		<p class="error" style="margin-left: 30px"><?php echo $_GET['error']; ?></p>
-     	<?php } ?>
+          <?php
+            include '../database/connection.php';
+            use phpmailer\PHPMailer\PHPMailer;
+            use phpmailer\PHPMailer\SMTP;
+            use phpmailer\PHPMailer\Exception;
+
+            if(isset($_POST['email'])){
+              $email = $_POST["email"];
+              $sql = mysqli_query($conn, "SELECT * FROM tbl_users WHERE email = '$email'");
+              $query = mysqli_num_rows($sql);
+                $fetch = mysqli_fetch_assoc($sql);
+               @$_SESSION['f_name'] = $fetch['first_name'] . ' ' . $fetch['last_name'] ;
+               @$_SESSION['fetchID'] = $fetch['user_id'];
+               $my_id = $_SESSION['fetchID'];
+              if(mysqli_num_rows($sql) <= 0){
+                  echo 'Sorry email does not exist, Please try again!';
+              }else{
+                  // generate token by binaryhexa 
+                  $otp = rand(100000,999999);
+                  $_SESSION['otp'] = $otp;
+                  $_SESSION['mail'] = $email;
+      
+                  $_SESSION['email'] = $email;
+                  $_SESSION['session_id'] = $my_id;
+                  $session_id = $_SESSION['session_id'];
+      
+                  // PHP MAILER Commands
+                  require '../phpmailer/src/Exception.php';
+                  require '../phpmailer/src/PHPMailer.php';
+                  require '../phpmailer/src/SMTP.php';
+                  
+                  
+                  $mail = new PHPMailer(true);
+                  $mail->SMTPDebug = SMTP::DEBUG_OFF;
+                  $mail->isSMTP();
+                  $mail->Host = 'smtp.gmail.com'; 
+                  $mail->SMTPAuth = true;
+                  $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+                  $mail->Username = "rosefurniture.notifications@gmail.com";
+                  $mail->Password = "dgqhrgltkiqekajj";
+                  $mail->setfrom("rosefurniture.notifications@gmail.com");
+                  $mail->Subject = "Reset Password";
+                  $mail->Port = 465; 
+                  $mail->IsHTML(true);
+                  $mail->Body = 'Reset password';			   
+                  $mail->addAddress($email);	
+                  $mail->addcc($email);
+                  $mail->Body='
+                  
+                        <!doctype html>
+                        <html lang="en">
+                          <head>
+                            <!-- Required meta tags -->
+                            <meta charset="utf-8">
+                            <meta name="viewport" content="width=device-width, initial-scale=1">
+                            <style>
+                                  .container {
+                                    display: grid;
+                                    grid-template-rows: 200px 1fr 1fr;
+                                    border: 1px solid black;
+                                    width: 700px;
+                                  }
+                            </style>
+                          </head>
+                          <body>
+                                <div class="container">
+                                  <div style="margin-left: 2em;">
+                                  <h3 style="color: black;">Hi '.$_SESSION['f_name'].'</h3>
+                                  <h4 style="color: black;">This is your verification code to reset your password,</h4>
+                                  <center><h1 style="color: black;">'.$otp.'</h1></center>
+                                  </div>
+                            </div>
+                          </body>
+                        </html>
+                  
+                  ';
+      
+                  $mail->send();
+  
+                  ?>
+                  <script>
+                     alert("Please kindly check your email inbox for your verification code to reset your password.")
+                      window.location.replace("verification");
+                  </script>
+                  <?php
+              }
+          }
+            
+          ?>
 		<div class="input">
-     	<input type="text" id="username" name="login_userCode" autocomplete="off" placeholder="Email"><br>
+     	<input type="text" id="email" name="email" autocomplete="off" placeholder="Email"><br>
 		</div>
 		
-		<button class ="btn-log" type="submit" name="login_Submit" disabled="disabled" id="loginButton" >Reset</button>
+		<button class ="btn-log" type="submit">Reset</button>
 
 		<!-- <div class="forgot_password">
 		<a href="forgot_password">Forgot password?</a>

@@ -2,7 +2,7 @@
 
 include '../database/connection.php';
 
-$sql = mysqli_query($conn, "SELECT * FROM tbl_order_detail_items WHERE to_complete = 2");
+$sql = mysqli_query($conn, "SELECT * FROM tbl_order_detail_items WHERE to_complete = 2 AND refund_status IN (0,1,2)");
 
 
 $data = array();

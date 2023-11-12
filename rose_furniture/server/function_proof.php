@@ -7,6 +7,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $amount = $_POST['amount'];
     $cart_id = $_POST['cart_id'];
 
+    $date = new DateTime('now', new DateTimeZone('Asia/Manila'));
+    $date_now = $date->format('Y-m-d H:i:s');
+
+
     function generateRandomString($length = 10) {
         $length = max(1, (int)$length);
         $randomBytes = random_bytes($length);
@@ -25,6 +29,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $file_tmp = $file['tmp_name'];
 
 
+
+
+
         $newName = $randomString . "_" . $file_name;
 
         $upload_dir = '../ecommerce/uploads/';
@@ -37,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         VALUES ('Delivered', '$amount', '$cart_id', '$newName', '$user_id')";
         mysqli_query($conn, $sql);
 
-        $update2 = "UPDATE tbl_order_detail_items SET to_complete = 2, refund_status = 1 WHERE cart_id = $cart_id ";   
+        $update2 = "UPDATE tbl_order_detail_items SET to_complete = 2, refund_status = 1, date_completed = '$date_now' WHERE cart_id = $cart_id ";   
         mysqli_query($conn, $update2);
 
         $selectOrder = mysqli_query($conn, "SELECT * FROM tbl_order_detail_items WHERE cart_id = '$cart_id' ");

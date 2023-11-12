@@ -41,6 +41,9 @@ $history = $_GET['history'];
           <button class="btn btn-gray">
             <a href="my_purchase?history=cancelled">Cancelled</a>
           </button>
+          <button class="btn btn-gray">
+            <a href="my_purchase?history=refund">Refund</a>
+          </button>
       </nav>
     </div>
 <!-- 
@@ -245,10 +248,10 @@ $history = $_GET['history'];
             <?php 
               include '../database/connection.php';
 
-              $sql = mysqli_query($conn, "SELECT t1.cart_id, t1.detail_code, t1.order_id, t1.product_code, t1.product_name, 
+              $sql = mysqli_query($conn, "SELECT t1.refund_status, t1.to_complete, t1.cart_id, t1.detail_code, t1.order_id, t1.product_code, t1.product_name, 
               t1.price, t1.quantity, t1.user_id, t1.to_pay, t2.product_image FROM 
               tbl_order_detail_items t1 LEFT JOIN tbl_products t2 ON 
-              t1.product_code = t2.product_code WHERE t1.user_id = '".$_SESSION['user_id']."' AND to_complete = 2");
+              t1.product_code = t2.product_code WHERE t1.user_id = '".$_SESSION['user_id']."' AND to_complete = 2 AND t1.refund_status IN (0,1,2)");
 
               if(mysqli_num_rows($sql)){
                 while($row = mysqli_fetch_assoc($sql)){
@@ -308,6 +311,65 @@ $history = $_GET['history'];
               t1.price, t1.quantity, t1.user_id, t1.to_pay, t2.product_image FROM 
               tbl_order_detail_items t1 LEFT JOIN tbl_products t2 ON 
               t1.product_code = t2.product_code WHERE t1.user_id = '".$_SESSION['user_id']."' AND status = 0");
+
+              if(mysqli_num_rows($sql)){
+                while($row = mysqli_fetch_assoc($sql)){
+
+                  $totalQty = $row['price'] * $row['quantity'];
+
+                  $sum = $conn->query("SELECT price, SUM(quantity) AS 'quantity' FROM tbl_cart_items WHERE user_id = '".$_SESSION['user_id']."' ");
+                  $fetchSum      = $sum->fetch_assoc();
+                  
+                  $totalSum = $fetchSum['price'] * $fetchSum['quantity'];
+                
+                  ?>
+                  
+                    <div class="col-xxl-4 col-md-3 btn-link">
+                    
+                      <div class="card info-card">
+                        <a href="view_order?code=<?= $row['order_id']; ?>&item=<?= $row['cart_id']; ?>&track_no=<?= $row['detail_code'] ?>">
+                      <div class="border">
+                      <img src="../ecommerce/uploads/<?= $row['product_image'] ?>" width="100%" height="150px" alt="">
+                      </div>
+                      <div style="margin-left: 5px;">
+                      <div class="ml-2 ">
+                          <label class=""><?= $row['product_name'] ?></label>
+                        </div>
+                        <div>
+                        <label class="">Price/ea : ₱<?= $row['price'] ?> | Qty : <?= $row['quantity'] ?></label>
+                        </div>
+                        <div>
+                        <label class="">Total : ₱<?= $totalQty ?></label>
+                        </div>
+                      </div>
+
+                      </div>
+                      </a>
+                    </div>  
+                    
+                  <?php
+                }
+              }else {
+                ?>
+                <div class="text-center">
+                  <h1>No available items!</h1>
+                </div>
+              <?php
+              }
+
+
+            
+            ?>
+            <?php
+              }else if($_GET['history'] == "refund"){
+                ?>
+            <?php 
+              include '../database/connection.php';
+
+              $sql = mysqli_query($conn, "SELECT t1.refund_status, t1.to_complete, t1.cart_id, t1.detail_code, t1.order_id, t1.product_code, t1.product_name, 
+              t1.price, t1.quantity, t1.user_id, t1.to_pay, t2.product_image FROM 
+              tbl_order_detail_items t1 LEFT JOIN tbl_products t2 ON 
+              t1.product_code = t2.product_code WHERE t1.user_id = '".$_SESSION['user_id']."' AND to_complete = 2 AND t1.refund_status IN (3,4,5,6,7)");
 
               if(mysqli_num_rows($sql)){
                 while($row = mysqli_fetch_assoc($sql)){

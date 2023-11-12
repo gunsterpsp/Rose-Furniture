@@ -50,4 +50,15 @@ if(isset($_POST['refundBtn'])){
 
 }
 
+if(isset($_POST['view_Refund'])){
+
+    $cart_id = $_POST['cart_id'];
+
+    $sql = mysqli_query($conn, "SELECT * FROM tbl_order_process WHERE cart_id = $cart_id AND order_text = 'Refunded' ");
+
+    $data = mysqli_fetch_assoc($sql);
+
+echo json_encode($data);
+}
+
 ?>

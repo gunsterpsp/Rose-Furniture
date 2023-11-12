@@ -35,7 +35,11 @@ $action = "
 
 
 
-$image = "<img src='../ecommerce/uploads/".$row['product_image']."' width = 100px height = 50px>"; 
+$image = "<div style='position: relative;'>
+<button data-bs-toggle='modal' data-bs-target='#EditImageBackdrop' 
+data-id='".$row['product_id']."' class='btn btn-sm btn-primary viewImage' style='position: absolute; right: 0px;'><i class='bx bx-images'></i></button>
+<img src='../ecommerce/uploads/".$row['product_image']."' width = 100px height = 50px>
+</div>"; 
 
 $data[] = array(
   "product_id"=> $row['product_id'],

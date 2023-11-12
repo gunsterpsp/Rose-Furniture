@@ -10,18 +10,19 @@ if (isset($_POST['getProduct'])) {
 
 
 ?>
-    <input type="hidden" class="form-control" value="<?= $data['product_id'] ?>" id="edit_id">
+<form id="imageUpdateForm" action="#" method="post" enctype="multipart/form-data">
+    <input type="hidden" class="form-control" name="edit_id" value="<?= $data['product_id'] ?>" id="edit_id">
     <div class="mb-2">
         <label for="">Product Name</label>
-        <input type="text" class="form-control" value="<?= $data['product_name'] ?>" id="edit_product_name">
+        <input type="text" class="form-control" name="edit_product_name" value="<?= $data['product_name'] ?>" id="edit_product_name">
     </div>
     <div class="mb-2">
         <label for="">Product Price</label>
-        <input type="text" class="form-control" readonly value="<?= $data['product_price'] ?>" id="edit_product_price">
+        <input type="text" class="form-control" name="edit_product_price" value="<?= $data['product_price'] ?>" id="edit_product_price">
     </div>
     <div class="mb-2">
         <label for="">Product Quantity</label>
-        <input type="text" class="form-control" readonly value="<?= $data['product_quantity'] ?>" id="edit_product_quantity">
+        <input type="text" class="form-control" name="edit_product_quantity" value="<?= $data['product_quantity'] ?>" id="edit_product_quantity">
     </div>
     <div class="mb-2">
         <label for="">Description</label>
@@ -48,10 +49,19 @@ if (isset($_POST['getProduct'])) {
         </select>
         <!-- <input type="text" class="form-control" name="product_category" id="product_category"> -->
     </div>
-    <div class="mb-2">
+    <!-- <div class="mb-2">
         <label for="">Product Image</label>
         <input type="file" class="form-control" id="edit_product_image">
-    </div>
+    </div> -->
+    </form>
+    <script>
+    $(document).ready(function() {
+        $('.select3').select2({
+            dropdownParent: $("#EditBackdrop")
+        });
+    });
+
+</script>
 <?php
 
     // echo json_encode($data);
@@ -72,12 +82,44 @@ if (isset($_POST['lock'])) {
     mysqli_query($conn, $update);
 }
 
-?>
-<script>
-    $(document).ready(function() {
-        $('.select3').select2({
-            dropdownParent: $("#EditBackdrop")
-        });
-    });
+if (isset($_POST['updateProduct'])) {
+    $product_id = (int) $_POST['edit_id'];
+    $edit_product_name = mysqli_real_escape_string($conn, $_POST['edit_product_name']);
+    $edit_product_price = (float) $_POST['edit_product_price'];
+    $edit_product_quantity = (int) $_POST['edit_product_quantity'];
+    $edit_product_description = mysqli_real_escape_string($conn, $_POST['edit_product_description']);
+    $edit_product_category = mysqli_real_escape_string($conn, $_POST['edit_product_category']);
+    
+    // Validate the data before updating the database
+    
+    $sql = "UPDATE tbl_products
+    SET product_name = '$edit_product_name',
+    product_price = '$edit_product_price',
+    product_quantity = '$edit_product_quantity',
+    product_description = '$edit_product_description',
+    product_category = '$edit_product_category'
+    WHERE product_id = $product_id";
+    
+    $result = mysqli_query($conn, $sql);
+    
+    if ($result === false) {
+      // Handle the error
+    } else {
+      // The product was successfully updated
+    }
+}
+if (isset($_POST['viewImage'])) {
+    $product_id = $_POST['data_id'];
 
-</script>
+    $sql = mysqli_query($conn, "SELECT product_image FROM tbl_products WHERE product_id = '$product_id' ");
+    $fetch = mysqli_fetch_assoc($sql);
+
+    $data = array(
+        "product_image"=> $fetch['product_image'],
+        "product_id"=> $product_id
+    );
+    echo json_encode($data);
+}
+
+
+?>

@@ -40,11 +40,13 @@
                       })
                         </script>';
                     }
-                    else if (stripos($auth_user["user_session"], "1") !== FALSE) {
+                    else if (stripos($auth_user["user_id"], "1") !== FALSE) {
                       header("location: ../ecommerce/dashboard");   
                     }
-                    else {
-                        header("location: ../ecommerce/home"); 
+                    else if(stripos($auth_user["group_code"], "3") !== FALSE){
+                        header("location: ../ecommerce/receiving"); 
+                    }else {
+                      header("location: ../ecommerce/home");  
                     }
                   }else {
                     echo '<script type="text/javascript">

@@ -103,7 +103,7 @@ while ($row = mysqli_fetch_assoc($sql)) {
         $totalItems = $totalItemsData['total'];
 
         // Step 2: Calculate Pagination Parameters
-        $itemsPerPage = 5;
+        $itemsPerPage = 20;
         $currentPage = isset($_GET['page']) ? $_GET['page'] : 1;
         $totalPages = ceil($totalItems / $itemsPerPage);
         $startIndex = ($currentPage - 1) * $itemsPerPage;
@@ -129,7 +129,7 @@ while ($row = mysqli_fetch_assoc($sql)) {
         ?>
           <div class="col-xxl-4 col-md-3 display_hide">
             <a href="../ecommerce/product?id=<?= $item['product_id'] ?>&code=<?= $item['product_code'] ?>">
-              <div class="card info-card">
+              <div class="card info-card" style="height: 225px;">
                 <div class="border">
                   <img src="../ecommerce/uploads/<?= $item['product_image'] ?>" width="100%" height="150px" alt="">
                 </div>
@@ -203,4 +203,8 @@ while ($row = mysqli_fetch_assoc($sql)) {
       }
     });
   })
+
+
+
+
 </script>

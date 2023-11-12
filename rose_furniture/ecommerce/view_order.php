@@ -120,12 +120,27 @@ $total_price = $row['price'] * $row['quantity'];
               </div>
               <div>
                 Payment Method : <?= $row['payment_method'] ?>
-              </div>
+              </div><br>
+              <?php
+              $sqlSelectCompleted = mysqli_query($conn, "SELECT * FROM tbl_order_detail_items WHERE order_id = '" . $_GET['code'] . "' AND to_complete IN (0,1) ");
+              if (mysqli_num_rows($sqlSelectCompleted) > 0) {
+              ?>
+                <div>
+                  Delivery should attempt on 3days within Metro Manila / 7days for outside Metro Manila
+                </div>
+              <?php
+              }
+
+
+              ?>
               <?php
               $sqlRefund = mysqli_query($conn, "SELECT * FROM tbl_order_detail_items WHERE order_id = '" . $_GET['code'] . "' ");
               $fetchRefund = mysqli_fetch_assoc($sqlRefund);
 
-              if ($fetchRefund['refund_status'] == "1") {
+
+
+
+              if ($fetchRefund['refund_status'] == "1" && $fetchRefund['to_complete'] == "2") {
               ?>
                 <div>
                   <label for="">Note : After 3 days of purchase this product cannot be refunded
@@ -238,6 +253,7 @@ $total_price = $row['price'] * $row['quantity'];
                 </div>
               <?php
               } else if ($rowOrder['order_text'] == "Delivered") {
+
               ?>
                 <div class="order-status">Your order has been delivered</div>
                 <div class="order-status"><?php
@@ -271,6 +287,25 @@ $total_price = $row['price'] * $row['quantity'];
                     </div>
                   </div>
                 </div>
+
+                <!-- Modal -->
+                <div class="modal fade" id="viewRefundBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="viewRefundBackdropLabel"></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                        <div id="display_refund"></div>
+                      </div>
+                      <div class="modal-footer">
+                        <!-- <button type="submit" class="btn btn-primary" name="submit">Submit</button> -->
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
               <?php
               } else if ($rowOrder['order_text'] == "Picked up") {
               ?>
@@ -299,22 +334,81 @@ $total_price = $row['price'] * $row['quantity'];
                   <div class="vertical-line"></div>
                   <div class="circle"><i class='bx bx-check'></i></div>
                 </div>
-            <?php
-              }else if ($rowOrder['order_text'] == "Refund") {
-                ?>
-                  <div class="order-status"><?= $rowOrder['order_remarks'] ?></div>
-                  <div class="order-status"><?php
-                                            $dateString = $rowOrder['date']; // Replace this with your date string
-                                            $dateTime = new DateTime($dateString);
-                                            $formattedDate = $dateTime->format('F j, Y g:i A');
-                                            echo $formattedDate;
-                                            ?></div>
-                  <div class="line-container">
-                    <div class="vertical-line"></div>
-                    <div class="circle"><i class='bx bx-check'></i></div>
-                  </div>
               <?php
-                }
+              } else if ($rowOrder['order_text'] == "Refund") {
+              ?>
+                <div class="order-status"><?= $rowOrder['order_remarks'] ?></div>
+                <div class="order-status"><?php
+                                          $dateString = $rowOrder['date']; // Replace this with your date string
+                                          $dateTime = new DateTime($dateString);
+                                          $formattedDate = $dateTime->format('F j, Y g:i A');
+                                          echo $formattedDate;
+                                          ?></div>
+                <div class="line-container">
+                  <div class="vertical-line"></div>
+                  <div class="circle"><i class='bx bx-check'></i></div>
+                </div>
+              <?php
+              } else if ($rowOrder['order_text'] == "Approved Refund") {
+              ?>
+                <div class="order-status"><?= $rowOrder['order_remarks'] ?></div>
+                <div class="order-status"><?php
+                                          $dateString = $rowOrder['date']; // Replace this with your date string
+                                          $dateTime = new DateTime($dateString);
+                                          $formattedDate = $dateTime->format('F j, Y g:i A');
+                                          echo $formattedDate;
+                                          ?></div>
+                <div class="line-container">
+                  <div class="vertical-line"></div>
+                  <div class="circle"><i class='bx bx-check'></i></div>
+                </div>
+              <?php
+              } else if ($rowOrder['order_text'] == "Get Rider") {
+              ?>
+                <div class="order-status"><?= $rowOrder['order_remarks'] ?></div>
+                <div class="order-status"><?php
+                                          $dateString = $rowOrder['date']; // Replace this with your date string
+                                          $dateTime = new DateTime($dateString);
+                                          $formattedDate = $dateTime->format('F j, Y g:i A');
+                                          echo $formattedDate;
+                                          ?></div>
+                <div class="line-container">
+                  <div class="vertical-line"></div>
+                  <div class="circle"><i class='bx bx-check'></i></div>
+                </div>
+              <?php
+              } else if ($rowOrder['order_text'] == "Refund Package") {
+              ?>
+                <div class="order-status"><?= $rowOrder['order_remarks'] ?></div>
+                <div class="order-status"><?php
+                                          $dateString = $rowOrder['date']; // Replace this with your date string
+                                          $dateTime = new DateTime($dateString);
+                                          $formattedDate = $dateTime->format('F j, Y g:i A');
+                                          echo $formattedDate;
+                                          ?></div>
+                <div class="line-container">
+                  <div class="vertical-line"></div>
+                  <div class="circle"><i class='bx bx-check'></i></div>
+                </div>
+              <?php
+              } else if ($rowOrder['order_text'] == "Refunded") {
+
+              ?>
+                <div class="order-status"><?= $rowOrder['order_remarks'] ?>
+                  <a href="#" class="view_Refund" data-bs-toggle='modal' data-id='<?= $rowHeader['cart_id'] ?>' data-bs-target='#viewRefundBackdrop'>View Detail</a>
+                </div>
+                <div class="order-status"><?php
+                                          $dateString = $rowOrder['date']; // Replace this with your date string
+                                          $dateTime = new DateTime($dateString);
+                                          $formattedDate = $dateTime->format('F j, Y g:i A');
+                                          echo $formattedDate;
+                                          ?></div>
+                <div class="line-container">
+                  <div class="vertical-line"></div>
+                  <div class="circle"><i class='bx bx-check'></i></div>
+                </div>
+            <?php
+              }
             }
 
             ?>
@@ -328,7 +422,7 @@ $total_price = $row['price'] * $row['quantity'];
 
 <!-- Modal -->
 <div class="modal fade" id="RefundBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-<div class="modal-dialog modal-dialog-centered">
+  <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="RefundBackdropLabel"></h5>
@@ -373,27 +467,71 @@ $total_price = $row['price'] * $row['quantity'];
   })
 
 
-  $(document).on("click", ".refundBtn", function(){
+  $(document).on("click", ".refundBtn", function() {
 
     const refund_text = $("#refund_text").val();
     const refundBtn = $(".refundBtn").val();
     const track_no = '<?= $_GET['track_no'] ?>';
     const cart_id = '<?= $_GET['item'] ?>';
 
+
+    if (refund_text == "") {
+      Swal.fire('Please indicate your reason for refund!', '', 'info');
+    } else {
+      Swal.fire({
+        title: 'Do you want to refund this order?, This is not irreversible',
+        showDenyButton: true,
+        confirmButtonText: 'Yes',
+      }).then((result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+          // Swal.fire('Order '+detail_code+' has been approved for refund', '', 'success');
+          $.ajax({
+            type: 'POST',
+            url: '../server/function_view_order.php',
+            data: {
+              refund_text: refund_text,
+              refundBtn: refundBtn,
+              track_no: track_no,
+              cart_id: cart_id
+            },
+            success: function(response) {
+              location.reload();
+            }
+          })
+
+        }
+      })
+    }
+
+
+
+
+
+
+
+  })
+
+
+  $(document).on("click", ".view_Refund", function() {
+    const cart_id = $(this).data("id");
+    const view_Refund = $(".view_Refund").val();
+
+
     $.ajax({
       type: 'POST',
       url: '../server/function_view_order.php',
       data: {
-        refund_text: refund_text,
-        refundBtn: refundBtn,
-        track_no: track_no,
-        cart_id: cart_id
+        cart_id: cart_id,
+        view_Refund: view_Refund,
       },
-      success: function(response){
-
+      dataType: "json",
+      success: function(response) {
+        $("#display_refund").html('\
+        <div><img src="../ecommerce/uploads/' + response.proof_image + '" style="width: 100%">\
+        GCash No. ' + response.order_remarks + '</div>')
       }
     })
-
 
 
   })
