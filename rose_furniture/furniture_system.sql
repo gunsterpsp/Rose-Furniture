@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 12, 2023 at 05:27 PM
+-- Generation Time: Nov 12, 2023 at 05:34 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -148,23 +148,6 @@ CREATE TABLE `tbl_order_detail_items` (
   `rider_refund_id` int(11) DEFAULT NULL,
   `date_created` timestamp NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `tbl_order_detail_items`
---
-
-INSERT INTO `tbl_order_detail_items` (`order_id`, `product_code`, `product_name`, `price`, `quantity`, `payment_method`, `user_id`, `detail_code`, `date_cancelled`, `status`, `to_pay`, `to_ship`, `to_pickup`, `in_transit`, `to_deliver`, `cart_id`, `to_complete`, `group_code`, `rider_id`, `refund_status`, `date_completed`, `rider_refund_id`, `date_created`) VALUES
-(1, 'rfHTqRxIkf', 'Whitfield Leather Ottoman', '5999', '1', 'Cash On Delivery', 2, '687d9de084043f1f3cc4', '2023-11-09 23:02:38', 1, 2, 2, 1, 0, 0, 1, 0, NULL, NULL, 0, NULL, NULL, '2023-11-09 15:07:08'),
-(2, 'YQGw2OH0CE', 'Monarch Rectangular Dining Set', '6449', '1', 'Cash On Delivery', 2, '26be269e7766d2ac8df5', '2023-11-09 23:03:32', 1, 2, 1, 0, 0, 0, 2, 0, NULL, NULL, 0, NULL, NULL, '2023-11-09 15:07:08'),
-(3, 'P9DGVbTZKo', 'Passages Vintage Dressers', '5699', '2', 'Cash On Delivery', 2, '009bbda272e02b59015c', '2023-11-09 23:04:15', 1, 2, 1, 0, 0, 0, 3, 0, NULL, NULL, 0, NULL, NULL, '2023-11-09 15:07:08'),
-(4, 'wF4HSy89iy', 'Adjustable Advanced Italian Sofas', '10999', '3', 'Cash On Delivery', 2, '892a661acdb3e9da1764', '2023-11-12 02:41:56', 1, 2, 1, 0, 0, 0, 5, 0, NULL, NULL, 0, NULL, NULL, '2023-11-11 18:41:56'),
-(5, '5rvYkjRRmI', 'Pendelton 47 Media Console', '2299', '4', 'Cash On Delivery', 2, '64eb6c4846ea4fb59d67', '2023-11-12 02:41:56', 1, 2, 1, 0, 0, 0, 4, 0, NULL, NULL, 0, NULL, NULL, '2023-11-11 18:41:56'),
-(6, 'P9DGVbTZKo', 'Passages Vintage Dressers', '5699', '2', 'Cash On Delivery', 2, 'a64267b594cacb565470', '2023-11-12 02:42:50', 1, 2, 1, 0, 0, 0, 7, 0, NULL, NULL, 0, NULL, NULL, '2023-11-11 18:42:50'),
-(7, 'rfHTqRxIkf', 'Whitfield Leather Ottoman', '5999', '1', 'Cash On Delivery', 2, '5580e5cfa3863dd64347', '2023-11-12 03:36:28', 1, 2, 1, 0, 0, 0, 6, 0, NULL, NULL, 0, NULL, NULL, '2023-11-11 19:36:28'),
-(8, '6NLze6PL8V', 'Wooden Kitchen Table', '1999', '4', 'Cash On Delivery', 2, 'e5cb6b7673b41a9a8a78', '2023-11-12 03:41:21', 1, 2, 1, 0, 0, 0, 10, 0, NULL, NULL, 0, NULL, NULL, '2023-11-11 19:41:21'),
-(9, 'LC1KVkpc52', 'Geoffrey Alexander Chair', '999', '4', 'Cash On Delivery', 2, 'ad4ed87cafdcc2d897dc', '2023-11-12 03:41:21', 1, 2, 2, 2, 2, 2, 11, 2, 3, '3', 1, '2023-11-12 21:59:00', NULL, '2023-11-11 19:41:21'),
-(10, 'P9DGVbTZKo', 'Passages Vintage Dressers', '5699', '2', 'Cash On Delivery', 2, '0c31ba2814697ce7e3fc', '2023-11-12 03:41:21', 1, 2, 2, 2, 2, 2, 8, 2, 3, '3', 7, '2023-11-12 04:02:32', 4, '2023-11-11 19:41:21'),
-(11, '5rvYkjRRmI', 'Pendelton 47 Media Console', '2299', '3', 'Cash On Delivery', 2, '49050b8ba1b791c1c614', '2023-11-12 03:43:00', 1, 2, 2, 2, 2, 2, 9, 2, 3, '3', 7, '2023-11-12 04:00:52', 4, '2023-11-11 19:43:00');
 
 -- --------------------------------------------------------
 
@@ -426,7 +409,7 @@ ALTER TABLE `tbl_notifications`
 -- AUTO_INCREMENT for table `tbl_order_detail_items`
 --
 ALTER TABLE `tbl_order_detail_items`
-  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `tbl_order_header_items`
