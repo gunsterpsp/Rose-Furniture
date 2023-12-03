@@ -28,6 +28,7 @@ if (!isset($_SESSION['user_id'])) {
             <th scope="col">Quantity</th>
             <th scope="col">Product Category</th>
             <th scope="col">Image</th>
+            <th scope="col">Supplier Name</th>
             <th scope="col">Action</th>
             <th scope="col">Status</th>
           </tr>
@@ -86,6 +87,21 @@ if (!isset($_SESSION['user_id'])) {
           <div class="mb-2">
             <label for="">Product Image</label>
             <input type="file" accept=".jpg, .png, .jpeg" class="form-control" name="product_image" id="product_image">
+          </div>
+          <div class="mb-2">
+            <label for="">Supplier</label>
+            <select class="form-select select4" name="supplier_id" id="supplier_id" style="width: 100%;">
+              <option value="">Select a supplier</option>
+              <?php
+              include '../database/connection.php';
+              $sql = mysqli_query($conn, "SELECT * FROM tbl_supplier WHERE supplier_status = 1 ");
+              while ($row = mysqli_fetch_assoc($sql)) {
+              ?>
+                <option value="<?= $row['supplier_id'] ?>"><?= $row['supplier_name'] ?></option>
+              <?php
+              }
+              ?>
+            </select>
           </div>
       </div>
       <div class="modal-footer">
@@ -178,6 +194,9 @@ if (!isset($_SESSION['user_id'])) {
         "data": "product_image"
       },
       {
+        "data": "supplier_name"
+      },
+      {
         "data": "action"
       },
       {
@@ -215,7 +234,7 @@ if (!isset($_SESSION['user_id'])) {
     if ($("#product_description").val() == "") return Swal.fire('Description', 'cannot be empty!', 'info');
     if ($("#product_category").val() == "") return Swal.fire('Product Category', 'cannot be empty!', 'info');
     if ($("#product_image").val() == "") return Swal.fire('Product Image', 'cannot be empty!', 'info');
-
+    if ($("#supplier_id").val() == "") return Swal.fire('Supplier', 'cannot be empty!', 'info');
 
     const prd = $("#product_name").val();
 
@@ -327,6 +346,7 @@ if (!isset($_SESSION['user_id'])) {
     const edit_product_quantity = $("#edit_product_quantity").val();
     const edit_product_description = $("#edit_product_description").val();
     const edit_product_category = $("#edit_product_category").val();
+    const edit_supplier = $("#edit_supplier").val();
     const updateProduct = $(".updateProduct").val();
 
     const data = {
@@ -336,6 +356,7 @@ if (!isset($_SESSION['user_id'])) {
       edit_product_quantity: edit_product_quantity,
       edit_product_description: edit_product_description,
       edit_product_category: edit_product_category,
+      edit_supplier: edit_supplier,
       updateProduct: updateProduct
     }
 
@@ -344,6 +365,8 @@ if (!isset($_SESSION['user_id'])) {
     if (edit_product_quantity == "") return Swal.fire('Product Qty', 'cannot be empty', 'info');
     if (edit_product_description == "") return Swal.fire('Product Description', 'cannot be empty', 'info');
     if (edit_product_category == "") return Swal.fire('Product Category', 'cannot be empty', 'info');
+    if (edit_supplier == "") return Swal.fire('Supplier', 'cannot be empty', 'info');
+
 
     Swal.fire({
       title: 'Do you want to update this item ' + edit_product_name + '?',
@@ -440,6 +463,9 @@ if (!isset($_SESSION['user_id'])) {
     });
     $('.select3').select2({
       dropdownParent: $("#EditBackdrop")
+    });
+    $('.select4').select2({
+      dropdownParent: $("#staticBackdrop")
     });
   });
 </script>

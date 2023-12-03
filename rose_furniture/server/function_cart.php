@@ -60,6 +60,7 @@ if(isset($_POST['confirmItem'])){
     $contact_no = $_POST['contact_no'];
     $total_price = $_POST['total_price'];
     $payment_method = 'Cash On Delivery';
+    $method_info = $_POST['method_info'];
 
     $sql_header = "INSERT INTO tbl_order_header_items 
     (full_name, address, contact_no, payment_method, total_price, remarks, user_id) 
@@ -77,10 +78,10 @@ if(isset($_POST['confirmItem'])){
         $uniqueID = substr(md5(uniqid(mt_rand(), true)), 0, 20);
     
         $sql_detail = "INSERT INTO tbl_order_detail_items 
-        (product_code, product_name, price, quantity, payment_method, user_id, detail_code, cart_id) 
+        (product_code, product_name, price, quantity, payment_method, user_id, detail_code, cart_id, product_mode) 
         VALUES ('".$row['product_code']."', '".$row['product_name']."', 
         '".$row['price']."', '".$row['quantity']."', '$payment_method', 
-        '".$_SESSION['user_id']."', '$uniqueID', '".$row['cart_id']."')";
+        '".$_SESSION['user_id']."', '$uniqueID', '".$row['cart_id']."', '$method_info')";
         mysqli_query($conn, $sql_detail);
     
         $sql2 = "INSERT INTO tbl_order_process 
@@ -95,6 +96,12 @@ if(isset($_POST['confirmItem'])){
         VALUES
         ('$notification_text', '$user_id', '1', '$uniqueID')";
         mysqli_query($conn, $sqlInsertNotif);
+
+        $sqlInsertNotif2 = "INSERT INTO tbl_notifications 
+        (notification_text, sender_id, receiver_id, detail_code)
+        VALUES
+        ('$notification_text', '$user_id', '2', '$uniqueID')";
+        mysqli_query($conn, $sqlInsertNotif2);
 
 
         $sql_delete = "DELETE FROM tbl_cart_items WHERE cart_id = '$cart_id' ";

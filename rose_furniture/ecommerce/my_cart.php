@@ -200,6 +200,13 @@ if(!isset($_SESSION['user_id']) || !isset($_SESSION['group_code'])){
           <label for=""><b>Total Price :</b> ₱<label for="" id="total_price_label"></label></label>
           <input type="hidden" id="total_price">
         </div>
+        <div>
+                <select name="" class="form-select" id="method_info">
+                  <option value="0">Select Method</option>
+                  <option value="1">Deliver</option>
+                  <option value="2">Pick Up</option>
+                </select>
+        </div>
         <!-- <div>
           <select name="" id="payment_method" class="form-select">
             <option value="0">Select Payment Method</option>
@@ -272,7 +279,9 @@ if(!isset($_SESSION['user_id']) || !isset($_SESSION['group_code'])){
         const contact_no = $("#contact_no").val();
         const total_price = $("#total_price").val();
         const payment_method = $("#payment_method").val();
+        const method_info = $("#method_info").val();
         const confirmItem = $(".confirmItem").val();
+
 
         const data = {
           full_name: full_name,
@@ -280,11 +289,14 @@ if(!isset($_SESSION['user_id']) || !isset($_SESSION['group_code'])){
           contact_no: contact_no,
           total_price: total_price,
           payment_method: payment_method,
+          method_info: method_info,
           confirmItem: confirmItem,
           cart_id: cart_id
         }
 
-        if(payment_method == 0) return Swal.fire('Payment Method','cannot be empty!','info');
+        if(method_info == 0) return Swal.fire('Method','cannot be empty!','info');
+
+        
 
         Swal.fire({
           title: 'Do you want all this item to order?',

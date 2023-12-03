@@ -41,6 +41,9 @@ data-id='".$row['product_id']."' class='btn btn-sm btn-primary viewImage' style=
 <img src='../ecommerce/uploads/".$row['product_image']."' width = 100px height = 50px>
 </div>"; 
 
+$sqlSupplier = mysqli_query($conn, "SELECT supplier_name FROM tbl_supplier WHERE supplier_id = '".$row['supplier_id']."' ");
+$fetchSupplier = mysqli_fetch_assoc($sqlSupplier);
+
 $data[] = array(
   "product_id"=> $row['product_id'],
   "product_code"=> $row['product_code'],
@@ -49,6 +52,7 @@ $data[] = array(
   "product_quantity"=> $row['product_quantity'],
   "product_category"=> $row['product_category'],
   "product_image"=> $image,
+  "supplier_name"=> $fetchSupplier['supplier_name'],
   "action"=> $action,
   "product_status"=> $product_status,
 );

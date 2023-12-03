@@ -23,7 +23,8 @@ $history = $_GET['history'];
           </button>
           <button class="btn btn-gray"><a href="my_purchase?history=to_ship">To Ship 
           <?php 
-                $cartSelect = $conn->query("SELECT COUNT(order_id) AS 'count' FROM tbl_order_detail_items WHERE user_id = '$getID' AND to_ship IN (1, 2) AND to_pickup IN (0, 1, 2) AND in_transit IN (0,1,2) AND to_deliver IN (0,1) ");
+                $cartSelect = $conn->query("SELECT COUNT(order_id) AS 'count' FROM tbl_order_detail_items 
+                WHERE user_id = '$getID' AND to_ship IN (1, 2) AND to_pickup IN (0, 1, 2) AND in_transit IN (0,1,2) AND to_deliver IN (0,1) AND to_complete = 0 ");
                 $cartItem = $cartSelect->fetch_assoc();
             ?>
            <span class="badge bg-success badge-number"><?= $cartItem['count'] ?></span> 
@@ -119,7 +120,7 @@ $history = $_GET['history'];
                 <?php
               }
 
-
+              
             
             ?>
                 
@@ -132,7 +133,7 @@ $history = $_GET['history'];
                   $sql = mysqli_query($conn, "SELECT t1.to_deliver, t1.in_transit, t1.to_pickup, t1.cart_id, t1.detail_code, t1.order_id, t1.product_code, t1.product_name, 
                   t1.price, t1.quantity, t1.user_id, t1.to_pay, t2.product_image FROM 
                   tbl_order_detail_items t1 LEFT JOIN tbl_products t2 ON 
-                  t1.product_code = t2.product_code WHERE t1.user_id = '".$_SESSION['user_id']."' AND t1.to_ship IN (1, 2) AND t1.to_pickup IN (0, 1, 2) AND t1.in_transit IN (0,1,2) AND t1.to_deliver IN (0,1) ");
+                  t1.product_code = t2.product_code WHERE t1.user_id = '".$_SESSION['user_id']."' AND t1.to_ship IN (1, 2) AND t1.to_pickup IN (0, 1, 2) AND t1.in_transit IN (0,1,2) AND t1.to_deliver IN (0,1) AND to_complete = 0 ");
 
                   if(mysqli_num_rows($sql)){
 

@@ -29,6 +29,7 @@
                               $_SESSION['user_id'] = $auth_user['user_id'];
                               $_SESSION['username'] = $auth_user['username'];
                               $_SESSION['group_code'] = $auth_user['group_code'];
+                              $_SESSION['logistic_id'] = $auth_user['logistic_id'];
                          if (stripos($auth_user['status'], '0') !== FALSE ) {
                       echo '<script type="text/javascript">
                       Swal.fire({
@@ -40,7 +41,12 @@
                       })
                         </script>';
                     }
-                    else if (stripos($auth_user["user_id"], "1") !== FALSE) {
+                    else if (stripos($auth_user["group_code"], "1") !== FALSE) {
+                      header("location: ../ecommerce/dashboard");   
+                    }else if(stripos($auth_user["group_code"], "5") !== FALSE){
+                      header("location: ../ecommerce/dashboard");   
+                    }
+                    else if(stripos($auth_user["group_code"], "4") !== FALSE){
                       header("location: ../ecommerce/dashboard");   
                     }
                     else if(stripos($auth_user["group_code"], "3") !== FALSE){

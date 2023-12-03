@@ -139,6 +139,29 @@ if(!isset($_SESSION['user_id'])){
     });
   })
 
+  $(document).on("change", "#last_departure", function(){
+      const valme = $("#last_departure").val();
+
+      if(valme == 0){
+        $("#logistics_data").hide();
+      }else {
+        $.ajax({
+            type: 'POST',
+            url: '../server/function_ship.php',
+            data: {
+              valme: valme
+            },
+            success: function(response) {
+              $("#logistics_data").show()
+              $("#logistics_data").html(response)
+            }
+      });
+      }
+
+
+            
+  })
+
 
   $(document).on("click", ".approve", function() {
     const order_id = $("#order_id").val()
@@ -208,6 +231,7 @@ if(!isset($_SESSION['user_id'])){
     const location_id = $("#location_id").val();
     const approve_ship = $(".approve_ship").val()
     const last_departure = $("#last_departure").val()
+    const user_id = $("#user_id").val()
 
     if(action_id == 0) return alert("Please select an action")
     if(location_id == "") return alert("Please set a location");
@@ -234,7 +258,8 @@ if(!isset($_SESSION['user_id'])){
             approve_ship: approve_ship,
             action_id: action_id,
             location_id: location_id,
-            last_departure: last_departure
+            last_departure: last_departure,
+            user_id: user_id
           },
           success: function(response) {
             $('#example').DataTable().ajax.reload();

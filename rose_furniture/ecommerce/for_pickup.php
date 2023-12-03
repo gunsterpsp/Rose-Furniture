@@ -24,6 +24,7 @@ if (!isset($_SESSION['user_id'])) {
             <th scope="col">Price</th>
             <th scope="col">Total Amount</th>
             <th scope="col">Payment</th>
+            <th scope="col">Tracking No.</th>
             <th scope="col">Action</th>
             <th scope="col">Status</th>
           </tr>
@@ -121,7 +122,7 @@ if (!isset($_SESSION['user_id'])) {
       [0, "desc"]
     ],
     ajax: {
-      url: "../server/in_transit_server.php",
+      url: "../server/for_pickup_server.php",
       'dataSrc': ""
     },
     "columns": [{
@@ -144,6 +145,9 @@ if (!isset($_SESSION['user_id'])) {
       },
       {
         "data": "payment_method"
+      },
+      {
+        "data": "tracking_no"
       },
       {
         "data": "action"

@@ -18,15 +18,15 @@ if (isset($_POST['approve'])) {
     (order_text, order_remarks, cart_id) VALUES ('Picked up', '$logistic_name', '" . $fetchSelect['cart_id'] . "')";
     mysqli_query($conn, $insert);
 
-    $notification_text = 'Your order no. ' . $fetchSelect['detail_code'] . ' is Preparing to ship';
-    $user_id = $_SESSION['user_id'];
-    $receiver_id = $fetchSelect['user_id'];
+    // $notification_text = 'Your order no. ' . $fetchSelect['detail_code'] . ' is Preparing to ship';
+    // $user_id = $_SESSION['user_id'];
+    // $receiver_id = $fetchSelect['user_id'];
 
-    $insertNotif = "INSERT INTO tbl_notifications 
-    (notification_text, sender_id, receiver_id, detail_code)
-    VALUES
-    ('$notification_text', '$user_id', '$receiver_id', '".$fetchSelect['detail_code']."')";
-    mysqli_query($conn, $insertNotif);
+    // $insertNotif = "INSERT INTO tbl_notifications 
+    // (notification_text, sender_id, receiver_id, detail_code)
+    // VALUES
+    // ('$notification_text', '$user_id', '$receiver_id', '".$fetchSelect['detail_code']."')";
+    // mysqli_query($conn, $insertNotif);
 }
 
 
@@ -114,7 +114,8 @@ if (isset($_POST['view_id'])) {
                     <option value="0">Please selech here...</option>
                     <option value="1">Last Departure</option>
                 </select>
-            </div>
+                </div>
+                <div id="logistics_data"></div>
                 ';
     }
     ?>
@@ -124,6 +125,25 @@ if (isset($_POST['view_id'])) {
 
 }
 
+if (isset($_POST['valme'])) {
+
+        ?>
+        <label for="">Destination</label>
+        <select name="" id="user_id" class="form-select">
+            <option value="0">Select a destination</option>
+            <?php
+                $sql = mysqli_query($conn, "SELECT * FROM tbl_users WHERE logistic_id <> '0'");
+                while($row = mysqli_fetch_assoc($sql)){
+                    ?>
+                        <option value="<?= $row['user_id'] ?>"><?= $row['first_name'] ?>/<?= $row['last_name'] ?></option>
+                    <?php
+                }
+            ?>
+        </select>
+        <?php
+        
+
+}
 
 if (isset($_POST['approve_ship'])) {
 
@@ -131,6 +151,7 @@ if (isset($_POST['approve_ship'])) {
     $order_text = $_POST['action_id'];
     $order_remarks = $_POST['location_id'];
     $last_departure = $_POST['last_departure'];
+    $user_id = $_POST['user_id'];
 
     $sql = mysqli_query($conn, "SELECT MAX(id) as 'last_id' FROM tbl_order_process WHERE cart_id = $cart_id ");
     $row = mysqli_fetch_assoc($sql);
@@ -142,10 +163,21 @@ if (isset($_POST['approve_ship'])) {
     VALUES ('$order_text', '$order_remarks', '$last_departure', '$cart_id')";
     mysqli_query($conn, $insert);
 
-    if ($last_departure == 1) {
-        $update2 = "UPDATE tbl_order_detail_items SET to_pickup = 2, in_transit = 1 WHERE cart_id = $cart_id ";
-        mysqli_query($conn, $update2);
+    $sqlSelect = mysqli_query($conn, "SELECT product_mode FROM tbl_order_detail_items WHERE cart_id = '$cart_id' ");
+    $rowSelect = mysqli_fetch_assoc($sqlSelect);
+
+    if($rowSelect['product_mode'] == "2"){
+        if ($last_departure == 1) {
+            $update2 = "UPDATE tbl_order_detail_items SET logistic_id = '$user_id',  in_transit = 1, to_pickup = 2, to_deliver = 1, to_complete = 1 WHERE cart_id = $cart_id ";
+            mysqli_query($conn, $update2);
+        }
+    }else {
+        if ($last_departure == 1) {
+            $update2 = "UPDATE tbl_order_detail_items SET logistic_id = '$user_id', to_pickup = 2, in_transit = 1 WHERE cart_id = $cart_id ";
+            mysqli_query($conn, $update2);
+        }
     }
+
 }
 
 

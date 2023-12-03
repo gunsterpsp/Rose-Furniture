@@ -2,7 +2,9 @@
 
 include '../database/connection.php';
 
-$sql = mysqli_query($conn, "SELECT * FROM tbl_order_detail_items WHERE in_transit IN (1, 2) AND to_deliver IN (0, 1) AND to_complete IN (0, 1) ");
+$sql = mysqli_query($conn, "SELECT * FROM tbl_order_detail_items 
+WHERE in_transit IN (1, 2) AND to_deliver IN (0, 1) AND to_complete IN (0, 1) AND product_mode = '2'
+AND logistic_id = '".$_SESSION['user_id']."' ");
 
 
 $data = array();
@@ -22,6 +24,10 @@ while ($row = mysqli_fetch_assoc($sql))
 
   $sql2 = mysqli_query($conn, "SELECT order_text FROM tbl_order_process WHERE order_text = 'In Transit' AND cart_id = '".$row['cart_id']."' AND rider_status = 0 ");
 
+  $sqlName = mysqli_query($conn, "SELECT first_name, last_name FROM tbl_users WHERE user_id = '".$row['user_id']."' ");
+  $fetchName = mysqli_fetch_assoc($sqlName);
+
+  $fullname = $fetchName['first_name'] . ' ' . $fetchName['last_name'];
 
   if($row['product_mode'] == "1"){
     if(mysqli_num_rows($sql2) > 0){
@@ -39,7 +45,7 @@ while ($row = mysqli_fetch_assoc($sql))
     $approve = "<button class='btn btn-success claimBtn' 
     data-id='".$row['order_id']."'>
     Approve</button>";
-    $statusInfo = "For claiming of Customer";
+    $statusInfo = "For claiming of Customer " . $fullname;
   }
 
 
@@ -73,6 +79,7 @@ $data[] = array(
   "quantity"=> $row['quantity'],
   "total_amount"=> '₱'.$row['price'] * $row['quantity'],
   "payment_method"=> $row['payment_method'],
+  "tracking_no"=> $row['detail_code'],
   "action"=> $action,
   "status"=> $statusInfo,
 );

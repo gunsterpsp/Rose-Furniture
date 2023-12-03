@@ -84,9 +84,16 @@ if(!isset($_SESSION['user_id'])){
           <label for="">Group</label>
           <select name="" class="form-select" id="group">
             <option value="0">Select Group</option>
-            <option value="1">Admin</option>
-            <option value="2">User</option>
-            <option value="3">Rider</option>
+            <?php
+              include '../database/connection.php';
+              $sql = mysqli_query($conn, "SELECT * FROM tbl_group_code WHERE status = 1");
+              while($row = mysqli_fetch_assoc($sql)){
+                ?>
+                <option value="<?php echo $row['group_code']?>"><?php echo $row['group_name']?></option>
+                <?php
+              }
+            
+            ?>
           </select>
         </div>
       </div>

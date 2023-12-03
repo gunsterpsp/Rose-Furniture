@@ -136,47 +136,6 @@ if(!isset($_SESSION['user_id'])){
               <a href="notifications" class="notifViewAll"><span style="cursor: pointer;" class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
               <span style="cursor: pointer;" class="badge rounded-pill bg-primary p-2 ms-2 markRead">Mark all as read</span>
             </li>
-            <!-- <li>
-              <hr class="dropdown-divider">
-            </li> -->
-
-            <!-- <li class="notification-item">
-              <i class="bi bi-exclamation-circle text-warning"></i>
-              <div>
-                <h4>Lorem Ipsum</h4>
-                <p>Quae dolorem earum veritatis oditseno</p>
-                <p>30 min. ago</p>
-              </div>
-            </li>
-
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-
-            <li class="notification-item">
-              <i class="bi bi-x-circle text-danger"></i>
-              <div>
-                <h4>Atque rerum nesciunt</h4>
-                <p>Quae dolorem earum veritatis oditseno</p>
-                <p>1 hr. ago</p>
-              </div>
-            </li> -->
-
-            <!-- <li>
-              <hr class="dropdown-divider">
-            </li>
-
-            <li class="notification-item">
-              <i class="bi bi-check-circle text-success"></i>
-              <div>
-                <h4>Sit rerum fuga</h4>
-                <p>Quae dolorem earum veritatis oditseno</p>
-                <p>2 hrs. ago</p>
-              </div>
-            </li> -->
-
-
-
 
             <?php
             $admin_id = $_SESSION['user_id'];
@@ -221,12 +180,12 @@ if(!isset($_SESSION['user_id'])){
                 }
               ?>
               <?php
-              }else if($_SESSION['group_code'] == 1){
+              }else if($_SESSION['group_code'] == 1 || $_SESSION['group_code'] == 5){
                 ?>
                 <?php
                   if($rowNotifsAdmin['status'] == 1){
                     ?>
-                                    <a href="approval" id="updateStatus" data-id="<?= $fetchOrder['detail_code'] ?>">
+                   <a href="approval" id="updateStatus" data-id="<?= $fetchOrder['detail_code'] ?>">
                   <li class="notification-item">
                     <i class="bi bi-info-circle text-primary"></i>
                     <div>
@@ -401,8 +360,14 @@ if(!isset($_SESSION['user_id'])){
                   $group = "Admin";
                 } else if ($user['group_code'] == 2) {
                   $group = "User";
-                } else {
-                  $group = "Rider";
+                } else if($user['group_code'] == 3){
+                  $group = "Courier";
+                }
+                else if($user['group_code'] == 4){
+                  $group = "Inventory Clerk";
+                }
+                else if($user['group_code'] == 5){
+                  $group = "Manager";
                 }
                 echo $group;
                 ?></span>
@@ -463,7 +428,7 @@ if(!isset($_SESSION['user_id'])){
 
 
       <?php
-      if ($_SESSION['group_code'] == 1) {
+      if ($_SESSION['group_code'] == 1 || $_SESSION['group_code'] == 5  || $_SESSION['group_code'] == 4) {
       ?>
         <li class="nav-item">
           <a class="nav-link <?php if ($curPageName != "dashboard.php") {
@@ -544,7 +509,7 @@ if(!isset($_SESSION['user_id'])){
         </li> -->
 
       <?php
-      } else if ($_SESSION['group_code'] == 1) {
+      } else if ($_SESSION['group_code'] == 1 || $_SESSION['group_code'] == 5) {
       ?>
 
         <li class="nav-item">
@@ -606,7 +571,7 @@ if(!isset($_SESSION['user_id'])){
           </a>
           <ul id="forms-nav" class="nav-content collapsed collapse 
         <?php
-        if ($curPageName == "receiving.php" || $curPageName == "delivery.php" || $curPageName == "for_refund.php") {
+        if ($curPageName == "for_pickup.php" || $curPageName == "receiving.php" || $curPageName == "delivery.php" || $curPageName == "for_refund.php") {
           echo 'show';
         }
         ?>" data-bs-parent="#sidebar-nav">
@@ -629,6 +594,13 @@ if(!isset($_SESSION['user_id'])){
                 <i class="bi bi-circle" style="<?php if ($curPageName == "for_refund.php") {
                                                   echo 'background: darkblue;';
                                                 } ?>"></i><span>For Refund</span>
+              </a>
+            </li>
+            <li>
+              <a href="for_pickup">
+                <i class="bi bi-circle" style="<?php if ($curPageName == "for_pickup.php") {
+                                                  echo 'background: darkblue;';
+                                                } ?>"></i><span>For Pick Up of Customer</span>
               </a>
             </li>
           </ul>
@@ -671,10 +643,13 @@ if(!isset($_SESSION['user_id'])){
 
       <?php
 
-      if ($getID == 1) {
+      if ($_SESSION['group_code'] == 5 || $_SESSION['group_code'] == 1 || $_SESSION['group_code'] == 4) {
       ?>
-        <li class="nav-heading">Admin</li>
-
+      <?php
+        if($_SESSION['group_code'] == 1){
+          ?>
+                  <li class="nav-heading">Admin</li>
+                  
         <li class="nav-item">
           <a class="nav-link <?php if ($curPageName != "users.php") {
                                 echo 'collapsed';
@@ -683,12 +658,34 @@ if(!isset($_SESSION['user_id'])){
             <span>Users</span>
           </a>
         </li>
+          <?php
+        }else if($_SESSION['group_code'] == 2){
+          ?>
+                  <li class="nav-heading">Manager</li>
+          <?php
+        }
+        else {
+          ?>
+                  <li class="nav-heading">Inventory</li>
+          <?php
+        }
+      ?>
+
+
         <li class="nav-item">
           <a class="nav-link <?php if ($curPageName != "products.php") {
                                 echo 'collapsed';
                               } ?>" href="products">
             <i class="bi bi-person"></i>
             <span>Products</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link <?php if ($curPageName != "supplier.php") {
+                                echo 'collapsed';
+                              } ?>" href="supplier">
+            <i class="bi bi-person"></i>
+            <span>Supplier</span>
           </a>
         </li>
       <?php

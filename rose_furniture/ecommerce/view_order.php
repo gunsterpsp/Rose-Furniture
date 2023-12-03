@@ -180,7 +180,8 @@ $total_price = $row['price'] * $row['quantity'];
             $sql = mysqli_query($conn, "SELECT * FROM tbl_order_process WHERE cart_id = '" . $_GET['item'] . "' ");
 
             while ($rowOrder = mysqli_fetch_assoc($sql)) {
-
+              $sqlGet2 = mysqli_query($conn, "SELECT product_mode FROM tbl_order_detail_items WHERE cart_id = '" . $_GET['item'] . "'");
+              $fetchGet2 = mysqli_fetch_assoc($sqlGet2);
               if ($rowOrder['order_text'] == "Order Placed") {
             ?>
                 <div class="order-status">Order Placed</div>
@@ -237,10 +238,16 @@ $total_price = $row['price'] * $row['quantity'];
                   <div class="vertical-line"></div>
                   <div class="circle"><i class='bx bx-check'></i></div>
                 </div>
+                <?php 
+              if($fetchGet2['product_mode'] == "2" && $rowOrder['order_text'] == "Departed" && $rowOrder['last_departure'] == "1" && $rowOrder['status'] == "1"){
+                echo 'This order is to be pick up by you from this courier ' . $rowOrder['order_remarks'];
+              }
+            ?>
               <?php
-              } else if ($rowOrder['order_text'] == "In Transit" && $rowOrder['rider_status'] == 1) {
+              } 
+              else if ($rowOrder['order_text'] == "In Transit" && $rowOrder['rider_status'] == 1) {
               ?>
-                <div class="order-status">In Transit (Rider) <b><?= $rowOrder['order_remarks'] ?></b></div>
+                <div class="order-status">In Transit by : <b><?= $rowOrder['order_remarks'] ?></b></div>
                 <div class="order-status"><?php
                                           $dateString = $rowOrder['date']; // Replace this with your date string
                                           $dateTime = new DateTime($dateString);
@@ -408,7 +415,22 @@ $total_price = $row['price'] * $row['quantity'];
                   <div class="circle"><i class='bx bx-check'></i></div>
                 </div>
             <?php
-              }
+              }else if ($rowOrder['order_text'] == "PickUpByCustomer") {
+
+                ?>
+                  <div class="order-status"><?= $rowOrder['order_remarks'] ?></div>
+                  <div class="order-status"><?php
+                                            $dateString = $rowOrder['date']; // Replace this with your date string
+                                            $dateTime = new DateTime($dateString);
+                                            $formattedDate = $dateTime->format('F j, Y g:i A');
+                                            echo $formattedDate;
+                                            ?></div>
+                  <div class="line-container">
+                    <div class="vertical-line"></div>
+                    <div class="circle"><i class='bx bx-check'></i></div>
+                  </div>
+              <?php
+                }
             }
 
             ?>

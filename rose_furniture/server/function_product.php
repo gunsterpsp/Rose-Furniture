@@ -47,16 +47,34 @@ if (isset($_POST['getProduct'])) {
             }
             ?>
         </select>
-        <!-- <input type="text" class="form-control" name="product_category" id="product_category"> -->
     </div>
-    <!-- <div class="mb-2">
-        <label for="">Product Image</label>
-        <input type="file" class="form-control" id="edit_product_image">
-    </div> -->
+    <div class="mb-2">
+        <label for="">Supplier</label>
+        <select class="form-select select5" name="edit_supplier" id="edit_supplier" style="width: 100%;">
+
+            <?php
+            $sqlSupplier = mysqli_query($conn, "SELECT supplier_name, supplier_id FROM tbl_supplier WHERE supplier_id = '" . $data['supplier_id'] . "' ");
+            $getSupplier = mysqli_fetch_assoc($sqlSupplier);
+            echo '<option value=' . $getSupplier['supplier_id'] . '>' . $getSupplier['supplier_name'] . '</option>';
+            ?>
+            <?php
+            include '../database/connection.php';
+            $sql2 = mysqli_query($conn, "SELECT * FROM tbl_supplier WHERE supplier_status = 1 ");
+            while ($row2 = mysqli_fetch_assoc($sql2)) {
+            ?>
+                <option value="<?= $row2['supplier_id'] ?>"><?= $row2['supplier_name'] ?></option>
+            <?php
+            }
+            ?>
+        </select>
+    </div>
     </form>
     <script>
     $(document).ready(function() {
         $('.select3').select2({
+            dropdownParent: $("#EditBackdrop")
+        });
+        $('.select5').select2({
             dropdownParent: $("#EditBackdrop")
         });
     });
@@ -89,6 +107,7 @@ if (isset($_POST['updateProduct'])) {
     $edit_product_quantity = (int) $_POST['edit_product_quantity'];
     $edit_product_description = mysqli_real_escape_string($conn, $_POST['edit_product_description']);
     $edit_product_category = mysqli_real_escape_string($conn, $_POST['edit_product_category']);
+    $supplier_id = (int) $_POST['edit_supplier'];
     
     // Validate the data before updating the database
     
@@ -97,7 +116,8 @@ if (isset($_POST['updateProduct'])) {
     product_price = '$edit_product_price',
     product_quantity = '$edit_product_quantity',
     product_description = '$edit_product_description',
-    product_category = '$edit_product_category'
+    product_category = '$edit_product_category',
+    supplier_id = '$supplier_id'
     WHERE product_id = $product_id";
     
     $result = mysqli_query($conn, $sql);
