@@ -61,4 +61,28 @@ if(isset($_POST['view_Refund'])){
 echo json_encode($data);
 }
 
+if(isset($_POST['locationBtn'])){
+
+    $track_no = $_POST['track_no'];
+    $cart_id = $_POST['cart_id'];
+    $refund_id = $_POST['location_id'];
+
+    $sql = "UPDATE tbl_order_detail_items SET refund_status = 4, rider_refund_id = '$refund_id' WHERE cart_id = '$cart_id' ";
+    mysqli_query($conn, $sql);
+
+    $sqlName = mysqli_query($conn, "SELECT first_name, last_name FROM tbl_users WHERE user_id = '$refund_id' ");
+    $fetchName = mysqli_fetch_assoc($sqlName);
+
+    $name = $fetchName['first_name'] . ' - ' . $fetchName['last_name']; 
+
+    $order_remarks = "For refund order tracking no : " . $track_no . " has been departed " . $name;
+
+    $insert = "INSERT INTO tbl_order_process 
+    (order_text, order_remarks, detail_code, cart_id) 
+    VALUES ('RefundLocation', '$order_remarks', '$track_no', '$cart_id')";
+    mysqli_query($conn, $insert);
+
+
+}
+
 ?>

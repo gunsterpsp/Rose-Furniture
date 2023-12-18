@@ -2,23 +2,24 @@
 
 include '../database/connection.php';
 $session = $_SESSION['user_id'];
-$sql = mysqli_query($conn, "SELECT * FROM tbl_order_detail_items WHERE rider_refund_id = $session AND to_complete = 2 AND refund_status IN (4, 5) ");
+$sql = mysqli_query($conn, "SELECT * FROM tbl_order_detail_items WHERE 
+rider_refund_id = $session AND 
+to_complete = 2 AND refund_status IN (3, 4, 5) ");
 
 
 $data = array();
 while ($row = mysqli_fetch_assoc($sql))
 {
-if($row['refund_status'] == "4"){
-  $approve = "<button class='btn btn-success view_refund' data-bs-toggle='modal' data-bs-target='#staticBackdrop'
-data-id='".$row['order_id']."' >
-<i class='bx bx-check'></i></button>
-<button class='btn btn-danger cancel' 
-data-id='".$row['order_id']."' >
-<i class='bx bx-x'></i></button>";
+if($row['refund_status'] == "3"){
+  $approve = "To Deliver - Owner";
+//   $approve = "<button class='btn btn-success view_refund' data-bs-toggle='modal' data-bs-target='#staticBackdrop'
+// data-id='".$row['order_id']."' >
+// <i class='bx bx-check'></i></button>
+// <button class='btn btn-danger cancel' 
+// data-id='".$row['order_id']."' >
+// <i class='bx bx-x'></i></button>";
 }else {
-  $approve = "<button class='btn btn-primary select_facility' data-bs-toggle='modal' data-bs-target='#courierBackdrop'
-  data-id='".$row['order_id']."' >
-  Set a package courier</button>";
+  $approve = "To Deliver - Owner";
 }
 
 

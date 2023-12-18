@@ -16,7 +16,7 @@
   <div class="row">
 
     <!-- Left side columns -->
-    <div class="col-lg-8">
+    <div class="col-lg-12">
       <div class="row">
 
 
@@ -33,13 +33,17 @@
                 </div>
                 <div class="ps-3">
                   <h6>₱<?php
-                        $sql = mysqli_query($conn, "SELECT SUM(price) as price, SUM(quantity) as 'quantity', COUNT(order_id) as 'count' FROM `tbl_order_detail_items` WHERE to_complete = 2 AND refund_status IN (0,1)");
-                        $row = mysqli_fetch_assoc($sql);
-                        echo $row['price'] * $row['quantity'];
+                    $totalAmount = 0;
+                    $sqlTotal = mysqli_query($conn, "SELECT * FROM tbl_order_detail_items WHERE to_complete = 2 AND refund_status IN (0, 1)");
 
+                    while ($row = mysqli_fetch_assoc($sqlTotal)) {
+                        $totalAmount += $row['price'] * $row['quantity'];
+                    }
+                    echo $totalAmount;
                         ?></h6>
                 </div>
               </div>
+              
             </div>
 
 
@@ -87,36 +91,7 @@
           </div>
         </div><!-- End Revenue Card -->
 
-        <div class="col-xxl-4 col-md-6">
-          <div class="card info-card sales-card">
-            <div class="card-body">
-              <h5 class="card-title">Generate <span>| Sales Report</span></h5>
-              <?php
-                if(@$_GET['export']){
-                  echo 'Selected date report not found!';
-                }
-              ?>
 
-                <form action="report" method="POST">
-                  <div class="mb-2">
-                    <label for="">Date From</label>
-                  <input type="date" id="from_date" name="from_date" class="form-control" placeholder="Start Date">
-                  </div>
-                  <div class="mb-2">
-                  <label for="">Date To</label>
-                  <input type="date" id="to_date" name="to_date" class="form-control" placeholder="End Date">
-                  </div>
-                  <div>
-                  <input type="submit" id="report" class="btn btn-primary w-100" value="Generate Report">
-                  </div>
-
-                </form>
-      
-            </div>
-
-
-          </div>
-        </div>
 
         <div class="col-xxl-4 col-md-6">
 
@@ -150,6 +125,104 @@
 
         </div>
 
+        <div class="col-xxl-4 col-md-6">
+
+<div class="card info-card customers-card">
+
+
+
+  <div class="card-body">
+    <h5 class="card-title">Refund Orders <span></span></h5>
+
+    <div class="d-flex align-items-center">
+      <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+      <i class='bx bxs-cart-download'></i>
+      </div>
+      <div class="ps-3">
+        <h6>
+            <?php
+              $sqlCust = mysqli_query($conn, "SELECT COUNT(order_id) as 'count' FROM tbl_order_detail_items WHERE to_complete = '2' AND refund_status = '7' ");
+              $fetchCust = mysqli_fetch_assoc($sqlCust);
+              echo $fetchCust['count'];
+            ?>
+
+        </h6>
+        <!-- <span class="text-danger small pt-1 fw-bold">12%</span> <span class="text-muted small pt-2 ps-1">decrease</span> -->
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</div>
+<div class="col-xxl-4 col-md-6">
+          <div class="card info-card sales-card">
+            <div class="card-body">
+              <h5 class="card-title">Generate <span>| Sales Report</span></h5>
+              <?php
+                if(@$_GET['export']){
+                  echo 'Selected date report not found!';
+                }
+              ?>
+
+                <form action="report" method="POST">
+                <input type="hidden" value="1" name="type">
+                  <div class="mb-2">
+                    <label for="">Date From</label>
+                  <input type="date" id="from_date" name="from_date" class="form-control" placeholder="Start Date">
+                  </div>
+                  <div class="mb-2">
+                  <label for="">Date To</label>
+                  <input type="date" id="to_date" name="to_date" class="form-control" placeholder="End Date">
+                  </div>
+                  <div>
+                  <input type="submit" id="report" class="btn btn-primary w-100" value="Generate Report">
+                  </div>
+
+                </form>
+      
+            </div>
+
+
+          </div>
+        </div>
+
+
+
+
+        
+                <div class="col-xxl-4 col-md-6">
+          <div class="card info-card sales-card">
+            <div class="card-body">
+              <h5 class="card-title">Generate <span>| Refund Report</span></h5>
+              <?php
+                if(@$_GET['export']){
+                  echo 'Selected date report not found!';
+                }
+              ?>
+
+                <form action="report" method="POST">
+                  <input type="hidden" value="2" name="type">
+                  <div class="mb-2">
+                    <label for="">Date From</label>
+                  <input type="date" id="from_date" name="from_date" class="form-control" placeholder="Start Date">
+                  </div>
+                  <div class="mb-2">
+                  <label for="">Date To</label>
+                  <input type="date" id="to_date" name="to_date" class="form-control" placeholder="End Date">
+                  </div>
+                  <div>
+                  <input type="submit" id="report" class="btn btn-primary w-100" value="Generate Report">
+                  </div>
+
+                </form>
+      
+            </div>
+
+
+          </div>
+        </div>
 
 
         <!-- Recent Sales -->

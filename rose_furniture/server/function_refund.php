@@ -4,6 +4,7 @@ include '../database/connection.php';
 
 
 if (isset($_POST['view_id'])) {
+    
 
     $order_id = $_POST['order_id'];
 
@@ -28,7 +29,7 @@ if (isset($_POST['view_id'])) {
 
     $trackNo = $sqlTrackNo['detail_code'];
 
-    $rider_name = $SqlRider['order_remarks'];
+    //$rider_name = $SqlRider['order_remarks'];
 
     $proof_image = $SqlData['proof_image'];
     $order_remarks = $SqlData['order_remarks'];
@@ -42,7 +43,6 @@ if (isset($_POST['view_id'])) {
     $data = array(
         "proof_image" => $proof_image,
         "order_remarks" => $order_remarks,
-        "rider_name" => $rider_name,
         "tracking_no" => $trackNo,
         "refund_text" => $refund_text
     );
@@ -81,6 +81,41 @@ if (isset($_POST['approveRefund'])) {
     ('$order_text', '$order_remarks', '$detail_code', '$cart_id')";
     mysqli_query($conn, $insertProcess);
 }
+
+if (isset($_POST['approveLast'])) {
+    $order_id = $_POST['order_id'];
+
+    $updateSql = "UPDATE tbl_order_detail_items SET refund_status = 5 WHERE order_id = '$order_id' ";
+    mysqli_query($conn, $updateSql);
+
+    $selectCode = mysqli_query($conn, "SELECT detail_code, user_id, cart_id FROM tbl_order_detail_items WHERE order_id = '$order_id' ");
+    $fetchCode = mysqli_fetch_assoc($selectCode);
+
+
+    // $notification_text = "Your request for refund has been approved with a tracking no : " . $detail_code;
+    // $sender_id = $_SESSION['user_id'];
+    // $receiver_id = $fetchCode['user_id'];
+
+
+    // $insertNotifs = "INSERT INTO tbl_notifications 
+    // (notification_text, sender_id, receiver_id, detail_code) 
+    // VALUES 
+    // ('$notification_text', '$sender_id', '$receiver_id', '$detail_code')";
+    // mysqli_query($conn, $insertNotifs);
+
+    $order_text = 'DeliveryRefund';
+    $order_remarks = "Delivery refund has been approved";
+    $cart_id = $fetchCode['cart_id'];
+    $detail_code = $fetchCode['detail_code'];
+
+    $insertProcess = "INSERT INTO tbl_order_process 
+    (order_text, order_remarks, detail_code, cart_id) 
+    VALUES 
+    ('$order_text', '$order_remarks', '$detail_code', '$cart_id')";
+    mysqli_query($conn, $insertProcess);
+}
+
+
 
 
 if (isset($_POST['refund_view'])) {

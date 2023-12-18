@@ -235,6 +235,7 @@ if(!isset($_SESSION['user_id'])){
 
     if(action_id == 0) return alert("Please select an action")
     if(location_id == "") return alert("Please set a location");
+    if(user_id == 0) return alert("Please select a destination");
 
     Swal.fire({
       title: 'This is not ireversable, Do you want to confirm this order?',

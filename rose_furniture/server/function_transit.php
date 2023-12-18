@@ -70,6 +70,9 @@ if(isset($_POST['approve'])){
 
 if(isset($_POST['claimBtn'])){
 
+    $date = new DateTime('now', new DateTimeZone('Asia/Manila'));
+    $new_date = @$date->format('Y-m-d H:i:s');
+
     $order_id = $_POST['order_id'];
 
     $sqlSelect = mysqli_query($conn, "SELECT cart_id FROM tbl_order_detail_items WHERE order_id = '$order_id' ");
@@ -83,7 +86,7 @@ if(isset($_POST['claimBtn'])){
     $update = "UPDATE tbl_order_process SET status = '0' WHERE id = '".$row['last_id']."' AND order_text = 'Departed' AND last_departure = '1' ";
     mysqli_query($conn, $update);
 
-    $sqlUpdate = "UPDATE tbl_order_detail_items SET refund_status = 1, to_complete = 2 WHERE order_id = '$order_id' ";
+    $sqlUpdate = "UPDATE tbl_order_detail_items SET date_completed = '$new_date', refund_status = 1, to_complete = 2 WHERE order_id = '$order_id' ";
     mysqli_query($conn, $sqlUpdate);
 
     $insert = "INSERT INTO tbl_order_process (order_text, order_remarks, cart_id) 

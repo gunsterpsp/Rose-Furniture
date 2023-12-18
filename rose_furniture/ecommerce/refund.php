@@ -158,6 +158,7 @@ if(!isset($_SESSION['user_id'])){
         const order_id = $(this).data("id")
         const view_id = $(".view_id").val();
 
+
         $.ajax({
           type: 'POST',
           url: '../server/function_refund.php',
@@ -167,6 +168,7 @@ if(!isset($_SESSION['user_id'])){
           },
           dataType: "json",
           success: function (response) {
+            console.log(response)
             $("#display_proof").html(
               '<div><input type="hidden" id="tracking_no" value='+response.tracking_no+'><label>Track No : </label> <b>'+response.tracking_no+'</b></div>\
               <div>'+response.order_remarks+'</div>\
@@ -175,6 +177,7 @@ if(!isset($_SESSION['user_id'])){
           }
         });
       })
+
 
 
 
@@ -206,6 +209,36 @@ if(!isset($_SESSION['user_id'])){
         }
       })
       })
+
+      $(document).on("click", ".approveLast", function(){
+        const order_id = $(this).data("id");
+        const approveLast = $(".approveLast").val();
+        
+        Swal.fire({
+        title: 'Do you want to approve this order?',
+        showDenyButton: true,
+        confirmButtonText: 'Yes',
+      }).then((result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+          Swal.fire('Delivery has been approved', '', 'success');
+          $.ajax({
+          type: 'POST',
+          url: '../server/function_refund.php',
+          data: {
+            order_id: order_id,
+            approveLast: approveLast
+          },
+          success: function (response) {
+            $('#example').DataTable().ajax.reload();
+          }
+        });
+
+        }
+      })
+      })
+
+      
 
       $(document).on("click", ".refund_view", function(){
 

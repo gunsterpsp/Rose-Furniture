@@ -355,6 +355,7 @@ $total_price = $row['price'] * $row['quantity'];
                   <div class="vertical-line"></div>
                   <div class="circle"><i class='bx bx-check'></i></div>
                 </div>
+
               <?php
               } else if ($rowOrder['order_text'] == "Approved Refund") {
               ?>
@@ -431,9 +432,33 @@ $total_price = $row['price'] * $row['quantity'];
                   </div>
               <?php
                 }
+                else if ($rowOrder['order_text'] == "RefundLocation") {
+
+                  ?>
+                    <div class="order-status"><?= $rowOrder['order_remarks'] ?></div>
+                    <div class="order-status"><?php
+                                              $dateString = $rowOrder['date']; // Replace this with your date string
+                                              $dateTime = new DateTime($dateString);
+                                              $formattedDate = $dateTime->format('F j, Y g:i A');
+                                              echo $formattedDate;
+                                              ?></div>
+                    <div class="line-container">
+                      <div class="vertical-line"></div>
+                      <div class="circle"><i class='bx bx-check'></i></div>
+                    </div>
+                <?php
+                  }
             }
 
             ?>
+            <?php
+                  if($fetchRefund['refund_status'] == "3" && $fetchRefund['rider_refund_id'] == NULL){
+                    ?>
+                      Please select the location of courier you wish you to deliver your for refund order
+                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#LocationBackdrop">Action</button>
+                    <?php
+                  }
+                ?>
           </div>
 
         </div>
@@ -461,10 +486,78 @@ $total_price = $row['price'] * $row['quantity'];
   </div>
 </div>
 
+<!-- Modal -->
+<div class="modal fade" id="LocationBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="LocationBackdropLabel"></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <select class="form-select" name="" id="location_id">
+          <option value="0">Please select a location here...</option>
+        <?php
+          $sqlLocation = mysqli_query($conn, "SELECT * FROM tbl_users WHERE logistic_id <> 0");
+          while($rowLocation = mysqli_fetch_assoc($sqlLocation)){
+            ?>
+              <option value="<?= $rowLocation['user_id'] ?>"><?= $rowLocation['first_name'] ?>/<?= $rowLocation['last_name'] ?></option>
+            <?php
+          }
+        ?>
+        </select>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary locationBtn">Submit</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <?php include '../includes/footer_ecommerce.php'; ?>
 
 
 <script>
+
+$(document).on("click", ".locationBtn", function() {
+
+const location_id = $("#location_id").val();
+const locationBtn = $(".locationBtn").val();
+const track_no = '<?= $_GET['track_no'] ?>';
+const cart_id = '<?= $_GET['item'] ?>';
+
+
+if (location_id == "") {
+  Swal.fire('Please select a location!', '', 'info');
+} else {
+  Swal.fire({
+    title: 'Are you sure?, This is not irreversible',
+    showDenyButton: true,
+    confirmButtonText: 'Yes',
+  }).then((result) => {
+    /* Read more about isConfirmed, isDenied below */
+    if (result.isConfirmed) {
+      // Swal.fire('Order '+detail_code+' has been approved for refund', '', 'success');
+      $.ajax({
+        type: 'POST',
+        url: '../server/function_view_order.php',
+        data: {
+          location_id: location_id,
+          locationBtn: locationBtn,
+          track_no: track_no,
+          cart_id: cart_id
+        },
+        success: function(response) {
+          location.reload();
+        }
+      })
+
+    }
+  })
+}
+
+})
+
   $(document).on("click", ".view_id", function() {
     const cart_id = $(this).data("id")
     const view_id = $(".view_id").val();

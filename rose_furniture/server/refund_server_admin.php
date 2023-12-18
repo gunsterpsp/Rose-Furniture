@@ -26,10 +26,8 @@ if($row['refund_status'] == "2"){
   data-id='".$row['order_id']."' data-bs-toggle='modal' 
   data-bs-target='#staticBackdrop'>View</button>";
 }else if($row['refund_status'] == "3"){
-  $status = "For picking up";
-  $action = "<button class='btn btn-warning refund_view' 
-  data-id='".$row['order_id']."' data-bs-toggle='modal' 
-  data-bs-target='#RefundBackdrop'>Set a rider</button>";
+  $status = "Waiting for customer to refund the item";
+  $action = "";
 }else if($row['refund_status'] == "6"){
   $sqlOrder = mysqli_query($conn, "SELECT order_text, order_remarks FROM tbl_order_process WHERE order_text = 'Refund Package' AND detail_code = '".$row['detail_code']."' ");
   $fetchOrder = mysqli_fetch_assoc($sqlOrder);
@@ -38,10 +36,24 @@ if($row['refund_status'] == "2"){
   data-bs-target='#ConfirmBackdrop'
   data-id='".$row['order_id']."'><i class='bx bx-check'></i></button>";
 }else if ($row['refund_status'] == "4"){
-  $action = "<button class='btn btn-warning change_view' 
-  data-id='".$row['order_id']."' data-bs-toggle='modal' 
-  data-bs-target='#changeRiderBackdrop'>Change rider</button>";
-  $status = "Waiting for confirmation of a rider";
+  $action = "<button class='btn btn-success approveLast'
+  data-id='".$row['order_id']."'><i class='bx bx-check'></i></button>";
+  // $action = "<button class='btn btn-warning change_view' 
+  // data-id='".$row['order_id']."' data-bs-toggle='modal' 
+  // data-bs-target='#changeRiderBackdrop'>Change rider</button>";
+  $status = "Waiting for delivery of return order";
+}else if ($row['refund_status'] == "5") {
+  // $sqlOrder = mysqli_query($conn, "SELECT order_text, order_remarks FROM tbl_order_process WHERE order_text = 'Refund Package' AND detail_code = '".$row['detail_code']."' ");
+  // $fetchOrder = mysqli_fetch_assoc($sqlOrder);
+  // $status = "<textarea readonly>".$fetchOrder['order_remarks']."</textarea>";
+  // $action = "<button class='btn btn-success getView' data-bs-toggle='modal' 
+  // data-bs-target='#ConfirmBackdrop'
+  // data-id='".$row['order_id']."'><i class='bx bx-check'></i></button>";
+
+  $action = "<button class='btn btn-success getView' data-bs-toggle='modal' 
+  // data-bs-target='#ConfirmBackdrop'
+  // data-id='".$row['order_id']."'><i class='bx bx-check'></i></button>";
+  $status = "For Refund of Cash";
 }else {
   $action = "";
   $status = "Refunded";
