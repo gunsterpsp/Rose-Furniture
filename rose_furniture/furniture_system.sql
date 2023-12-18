@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 12, 2023 at 05:34 PM
+-- Generation Time: Dec 18, 2023 at 09:41 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -84,6 +84,29 @@ INSERT INTO `tbl_category` (`category_id`, `category_name`, `category_status`) V
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `tbl_group_code`
+--
+
+CREATE TABLE `tbl_group_code` (
+  `group_code` int(11) NOT NULL,
+  `group_name` varchar(100) DEFAULT NULL,
+  `status` int(11) DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `tbl_group_code`
+--
+
+INSERT INTO `tbl_group_code` (`group_code`, `group_name`, `status`) VALUES
+(1, 'Admin', 1),
+(2, 'User', 1),
+(3, 'Courier', 1),
+(4, 'Inventory Clerk', 1),
+(5, 'Manager', 1);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `tbl_logistics_partner`
 --
 
@@ -146,6 +169,8 @@ CREATE TABLE `tbl_order_detail_items` (
   `refund_status` int(11) DEFAULT 0,
   `date_completed` varchar(100) DEFAULT NULL,
   `rider_refund_id` int(11) DEFAULT NULL,
+  `product_mode` int(11) DEFAULT NULL,
+  `logistic_id` int(11) DEFAULT 0,
   `date_created` timestamp NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -204,6 +229,7 @@ CREATE TABLE `tbl_products` (
   `product_category` varchar(100) DEFAULT NULL,
   `product_description` varchar(1000) DEFAULT NULL,
   `product_image` varchar(100) DEFAULT NULL,
+  `supplier_id` int(11) DEFAULT NULL,
   `product_status` varchar(100) DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -211,18 +237,9 @@ CREATE TABLE `tbl_products` (
 -- Dumping data for table `tbl_products`
 --
 
-INSERT INTO `tbl_products` (`product_id`, `product_code`, `product_name`, `product_price`, `product_quantity`, `product_category`, `product_description`, `product_image`, `product_status`) VALUES
-(1, '6NLze6PL8V', 'Wooden Kitchen Table', '1999', '546', 'Tables', 'Everlasting quality made with nara tree', '6NLze6PL8V_table.jpeg', '1'),
-(2, 'xLkqKxNfQ0', 'Silver Sofa Set', '3999', '1000', 'Sofas', 'Cotton sofa set with pillows', 'xLkqKxNfQ0_sofa.jpg', '1'),
-(3, 'LC1KVkpc52', 'Geoffrey Alexander Chair', '999', '688', 'Chairs', 'Width (side to side): 32\" W\r\nDepth (front to back): 34.5\" D\r\nHeight (bottom to top): 33\" H\r\nSeat Width: 23\"\r\nSeat Depth: 22\"\r\nSeat Height: 18\"\r\nArm Height: 24\"', 'LC1KVkpc52_chairs.jpg', '1'),
-(4, 'cJzVTZybiy', 'Hillsdale Metal Bed', '7999', '152', 'Beds', 'Width (side to side): 60\" W\r\nDepth (front to back): 83.5\" D\r\nHeight (bottom to top): 52\" H', 'cJzVTZybiy_OIP.jpg', '1'),
-(5, 'bX1IhdEm1X', 'Barnwood Computer Desk', '2499', '545', 'Desks', 'The \"Diana\" Barnwood corner desk with twin framed drawers. Main section measures 80″W x 24″D and return section is 56″W x 24″D, giving it an overall dimension of 80″ x 80″. The 1-1/2″ top sits on steel legs and an industrial welded framework. All of the drawer boxes are dovetailed solid wood and feature soft-close Blum undermount slides for the smoothest action. The legs are 3″ x 3″ welded steel with an antique blackened finish. Adjustable leg levelers included.', 'bX1IhdEm1X_OIP (1).jpg', '1'),
-(6, 'NTXq2ol16K', 'Serta Luxe Chamblee 12.5\"', '2769', '323', 'Mattreses', 'Height : 13.5 Inches\r\nLength : 75 Inches\r\nWeight : 59 Pounds\r\nWidth : 54 Inches', 'NTXq2ol16K_OIP (2).jpg', '1'),
-(7, 'P9DGVbTZKo', 'Passages Vintage Dressers', '5699', '4426', 'Dressers', 'Dresser : 66\"W x 18\"D x 40.5\"H - 155lbs.\r\nTop Drawer Dimensions : 25\"W x 12.4\"D x 4.5\"H\r\nMiddle 3 Drawer Dimensions : 13\"W x 12.4\"D x 7\"H\r\nLeg Height : 2.24\"\r\nOptional Mirror : 46\"W x 3.8\"D x 40\"H - 21lbs.', 'P9DGVbTZKo_ren-b921-70-2_ren20231.jpg', '1'),
-(8, 'rfHTqRxIkf', 'Whitfield Leather Ottoman', '5999', '1228', 'Ottomans', 'Brand: Thomasville\r\nCondition: Fair\r\nItem ID: 77066\r\nDimensions: 30\" W x 18\" H x 24\" D', 'rfHTqRxIkf_OIP (3).jpg', '1'),
-(9, 'YQGw2OH0CE', 'Monarch Rectangular Dining Set', '6449', '438', 'Dining Tables', 'Table, Drop Leaf Down: 48-1/4\"W x 36\"D x 30-1/4\"H\r\nTable, Drop Leaf Up: 66\"W x 36\"D x 30-1/4\"H\r\nChair: 20-3/4\"W x 17-3/4\"D x 38\"H', 'YQGw2OH0CE_home_styles_hs-5020-308-s3.jpg', '1'),
-(10, 'wF4HSy89iy', 'Adjustable Advanced Italian Sofas', '10999', '273', 'Sectional', 'Width: 88\"\nDepth: 43\"\nHeight: 26\"', 'wF4HSy89iy_OIP (4).jpg', '1'),
-(11, '5rvYkjRRmI', 'Pendelton 47 Media Console', '2295', '600', 'TV Stands', 'Overall\n26\' H X 47\' W X 15\' D\nOverall Product Weight\n85 lb', 'w0gAspKvn0_OIP (5).jpg', '1');
+INSERT INTO `tbl_products` (`product_id`, `product_code`, `product_name`, `product_price`, `product_quantity`, `product_category`, `product_description`, `product_image`, `supplier_id`, `product_status`) VALUES
+(1, '9OS0ngcKiA', 'Falbion 2 seater & 1 Seater Sofa Set', '51995', '295', 'Sofas', '600DS-2 SUMMER BEIGE; OTTER GRAY; MOCCA BROWN; 600DS-3 SAND STONE; 600DS-5 ALMOND BROWN; 600DS-6 LIGHT GRAY; 600DS-7 TITANIUM GRAY; 600DS-5 ALMOND BROWN', '9OS0ngcKiA_sss.jpg', 1, '1'),
+(2, 'F0Q8VNIrOC', 'Customizable Rectangular Counter Height Table', '23000', '394', 'Tables', 'Counter height tables make dining more casual and relaxed, and with Canadel you can choose your size for a perfect fit. What shape is your room? How many people would you like to seat? Formal or casual? With over 30 sizes up to 108” in length', 'F0Q8VNIrOC_table.jpg', 1, '1');
 
 -- --------------------------------------------------------
 
@@ -273,6 +290,32 @@ CREATE TABLE `tbl_reply_comment` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `tbl_supplier`
+--
+
+CREATE TABLE `tbl_supplier` (
+  `supplier_id` int(11) NOT NULL,
+  `supplier_name` varchar(100) DEFAULT NULL,
+  `supplier_address` varchar(100) DEFAULT NULL,
+  `supplier_contact` varchar(100) DEFAULT NULL,
+  `supplier_status` int(11) DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `tbl_supplier`
+--
+
+INSERT INTO `tbl_supplier` (`supplier_id`, `supplier_name`, `supplier_address`, `supplier_contact`, `supplier_status`) VALUES
+(1, 'D&G Appliance', 'Makati City', '09782737232', 1),
+(2, 'MegaWorld', 'Manila City', '09323192382', 1),
+(3, 'iFurniture Expo', 'Taguig City', '09455668154', 1),
+(4, 'Uratext Foam', 'Iligan City', '09251547887', 1),
+(5, 'Mandaue Foam', 'Dagupan City', '09556448156', 1),
+(6, 'MegaBitz Appliances', 'Tarlac City', '09323195859', 1);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `tbl_users`
 --
 
@@ -286,6 +329,7 @@ CREATE TABLE `tbl_users` (
   `password` varchar(100) DEFAULT NULL,
   `email` varchar(100) DEFAULT NULL,
   `group_code` int(11) DEFAULT NULL,
+  `logistic_id` int(11) DEFAULT 0,
   `status` int(11) DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -293,13 +337,15 @@ CREATE TABLE `tbl_users` (
 -- Dumping data for table `tbl_users`
 --
 
-INSERT INTO `tbl_users` (`user_id`, `first_name`, `last_name`, `address`, `contact_no`, `username`, `password`, `email`, `group_code`, `status`) VALUES
-(1, 'Oliver', 'Dela Fuente', 'Obeses St. Pandacan, Manila', '09637710968', 'gunsterpsp', '123', 'gunsterpsp@gmail.com', 1, 1),
-(2, 'Rose Marie', 'Del Valle', 'Antique', '09238848230', 'rose', '123', 'rosemarie@gmail.com', 2, 1),
-(3, 'Vincent', 'De Guzman', 'Makati', '09218832482', 'vincent', '123', 'vincent@gmail.com', 3, 1),
-(4, 'Ronaldo', 'Santiago', 'Pasig', '09514420329', 'ronaldo', '123', 'ronaldo@gmail.com', 3, 1),
-(5, 'Deserie', 'Salve', 'bobocap', '09321230054', 'deserie', '123', 'deserie@gmail.com', 2, 1),
-(6, 'Oliver', 'Dela Fuente', 'Manila', '09838289302', 'oliver123', '123', 'oliver@gmail.com', 2, 1);
+INSERT INTO `tbl_users` (`user_id`, `first_name`, `last_name`, `address`, `contact_no`, `username`, `password`, `email`, `group_code`, `logistic_id`, `status`) VALUES
+(1, 'Oliver', 'Dela Fuente', 'Obeses St. Pandacan, Manila', '09637710968', 'gunsterpsp', '123', 'gunsterpsp@gmail.com', 1, 0, 1),
+(2, 'manager', 'manager', 'Antique', '09238848230', 'manager', '123', 'rosemarie@gmail.com', 5, 0, 1),
+(3, 'inventory', 'clerk', 'Makati', '09218832482', 'inv', '123', 'vincent@gmail.com', 4, 0, 1),
+(4, 'JNT Express', 'Makati', 'Pasig', '09514420329', 'ronaldo', '123', 'ronaldo@gmail.com', 3, 1, 1),
+(5, 'Deserie', 'Salve', 'Muntinlupa City', '09321230054', 'deserie', '123', 'deserie@gmail.com', 2, 0, 1),
+(6, 'Oliver', 'Dela Fuente', 'Manila', '09838289302', 'oliver123', '123', 'oliver@gmail.com', 2, 0, 1),
+(7, 'Rose Marie', 'Del Valle', 'Makati City', '09323892323', 'rose', '123', 'manager@gmail.com', 2, 0, 1),
+(8, 'LBC Express', 'Manila', 'Tondo, Manila', '093727367127', 'aldrin', '1234', 'aldrinsilvestre@gmail.com', 3, 2, 1);
 
 --
 -- Indexes for dumped tables
@@ -316,6 +362,12 @@ ALTER TABLE `tbl_cart_items`
 --
 ALTER TABLE `tbl_category`
   ADD PRIMARY KEY (`category_id`);
+
+--
+-- Indexes for table `tbl_group_code`
+--
+ALTER TABLE `tbl_group_code`
+  ADD PRIMARY KEY (`group_code`);
 
 --
 -- Indexes for table `tbl_logistics_partner`
@@ -372,6 +424,12 @@ ALTER TABLE `tbl_reply_comment`
   ADD PRIMARY KEY (`reply_id`);
 
 --
+-- Indexes for table `tbl_supplier`
+--
+ALTER TABLE `tbl_supplier`
+  ADD PRIMARY KEY (`supplier_id`);
+
+--
 -- Indexes for table `tbl_users`
 --
 ALTER TABLE `tbl_users`
@@ -392,6 +450,12 @@ ALTER TABLE `tbl_cart_items`
 --
 ALTER TABLE `tbl_category`
   MODIFY `category_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+
+--
+-- AUTO_INCREMENT for table `tbl_group_code`
+--
+ALTER TABLE `tbl_group_code`
+  MODIFY `group_code` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `tbl_logistics_partner`
@@ -427,7 +491,7 @@ ALTER TABLE `tbl_order_process`
 -- AUTO_INCREMENT for table `tbl_products`
 --
 ALTER TABLE `tbl_products`
-  MODIFY `product_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `product_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `tbl_product_comments`
@@ -448,10 +512,16 @@ ALTER TABLE `tbl_reply_comment`
   MODIFY `reply_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `tbl_supplier`
+--
+ALTER TABLE `tbl_supplier`
+  MODIFY `supplier_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
 -- AUTO_INCREMENT for table `tbl_users`
 --
 ALTER TABLE `tbl_users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
